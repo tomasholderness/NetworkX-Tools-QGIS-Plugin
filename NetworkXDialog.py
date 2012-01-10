@@ -40,6 +40,7 @@ class NetworkXDialogPath(QtGui.QDialog):
       # Set up the user interface from Designer. 
       self.ui = Ui_NetworkXPath()
       self.ui.setupUi(self)
+      self.iface = qgis.utils.iface
       # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
@@ -118,10 +119,12 @@ class NetworkXDialogPath(QtGui.QDialog):
 				         # stop here so as to select one point only. 
 	       else:
                        QtGui.QMessageBox.warning( self.iface.mainWindow(),
-                        "Error", "Selected node layer must be point geometry")	               
+                        "NetworkX Plugin Error", 
+                           "Selected node layer must be point geometry")	               
        else:
                QtGui.QMessageBox.information( self.iface.mainWindow(),
-                        "Info", "No layer currently selected in TOC" )
+                        "NetworkX Plugin Info", 
+                           "No layer currently selected in TOC" )
 
    def shortestPath(self):
       #read source/target points from gui
@@ -147,32 +150,36 @@ class NetworkXDialogPath(QtGui.QDialog):
             print 'Identified target node in network'
             targetNode = node
             print targetNode
-         #else:
+      #else:
+      #   print "tom"
       #elif str(node[1]) == y:
       #	print 
      	#str_node = str(node)
      	#str_node = str_node.split(', ')
-     	#print str_node[0] 
-      p = nx.shortest_path(DG1, sourceNode, targetNode)
-      print len(p)
-      print p
-      DG2 = nx.DiGraph()
+     	#print str_node[0]
+      try: 
+            p = nx.shortest_path(DG1, sourceNode, targetNode)
+            DG2 = nx.DiGraph()
+            
+            for i in range(0,len(p)-1):
+               DG2.add_edge(p[i],p[i+1])
+               DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
 
-      for i in range(0,len(p)-1):
-         DG2.add_edge(p[i],p[i+1])
-         DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
-
-      outdir = '/home/a5245228/'
-      nx.write_shp(DG2, '/home/a5245228/')
-      # Get created files
-      nodes = outdir+"nodes.shp"
-      edges = outdir+"edges.shp"
-      # Add to QGIS instance
-      qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", 
-                                       "ogr")
-      qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", 
-                                       "ogr")
-	
+            outdir = '/home/a5245228/'
+            nx.write_shp(DG2, '/home/a5245228/')
+            # Get created files
+            nodes = outdir+"nodes.shp"
+            edges = outdir+"edges.shp"
+            # Add to QGIS instance
+            qgis.utils.iface.addVectorLayer(edges, 
+               "Shortest Route Network Edges", "ogr")
+            qgis.utils.iface.addVectorLayer(nodes, 
+               "Shortest Route Network Nodes", "ogr")
+      except nx.NetworkXNoPath as e:
+            QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                        "NetworkX Plugin Error", 
+                           "%s" % str(e))
+            
    def exit(self):
        self.close() 
       
