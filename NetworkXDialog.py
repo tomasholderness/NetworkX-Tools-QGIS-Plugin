@@ -81,16 +81,13 @@ class NetworkXDialogPath(QtGui.QDialog):
 
    def selectFeature(self, point, button):
        # Select Features function from http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
-       #QtGui.QMessageBox.information( self.iface.mainWindow(),"Info", "in selectFeature function" )
        # setup the provider select to filter results based on a rectangle
        pntGeom = QgsGeometry.fromPoint(point)
-       # scale-dependent buffer of 2 pixels-worth of map units
+       # scale-dependent buffer of 3 pixels-worth of map units
        pntBuff = pntGeom.buffer( (self.canvas.mapUnitsPerPixel() * 3),0)
        rect = pntBuff.boundingBox()
        # get currentLayer and dataProvider
        cLayer = self.canvas.currentLayer()
-       
-       #selectList = []
        if cLayer:
                provider = cLayer.dataProvider()
 	       if cLayer.geometryType() == QGis.Point:
@@ -103,20 +100,10 @@ class NetworkXDialogPath(QtGui.QDialog):
 		               # if the feat geom returned from the selection intersects our point then put it in a list
 		               if feat.geometry().intersects(rect):
 				       cLayer.select(feat.id())
-		                       #print float(feat.geometry().asPoint().x())
-		                       #self.ui.lineEditSourceNode.clear()
 		                       self.output.clear()
-		                       #self.ui.lineEditSourceNode.insert(str(feat.geometry().asPoint().x())+','+str(feat.geometry().asPoint().y()))
 		                       self.output.insert(str(feat.geometry().asPoint().x())+','+str(feat.geometry().asPoint().y()))
-				       #print 'here: %f' % (feat.geometry().asPoint())
-				       break 
-		                       #selectList.append(feat.id())
-
-		       # make the actual selection (select the first feature to avoid multiple selections)
-		       #cLayer.setSelectedFeatures(selectList[0])
-		       ##print help(cLayer)
-		       #if len(selectList) > 0:
-			       #cLayer.select(selectList[0])
+				       break
+				         # stop here so as to select one point only. 
 	       else:
                        QtGui.QMessageBox.warning( self.iface.mainWindow(),"Error", "Selected node layer must be point geometry")	               
        else:
