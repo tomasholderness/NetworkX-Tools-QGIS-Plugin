@@ -1,6 +1,6 @@
 """
 /******************************************************************************
-Name		            : NetworkX Plugin
+Name		            : NetworkX Tools
 Description          : Perform network analysis using the NetworkX package 
 Date                 : 03/01/2012
 copyright            : (C) 2012 Tom Holderness & Newcastle University
@@ -12,7 +12,7 @@ license		         : Relseased under Simplified BSD license (see LICENSE.txt)
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 def name(): 
-  return "NetworkX Plugin" 
+  return "NetworkX Tools" 
 def description():
   return "Perform network analysis using the NetworkX package"
 def version(): 

@@ -1,9 +1,9 @@
 """
 /******************************************************************************
-Name		            : NetworkX Plugin
+Name		            : NetworkX Tools
 Description          : Perform network analysis using the NetworkX package 
 Date                 : 03/01/2012
-copyright            : (C) 2010 Tom Holderness & Newcastle University
+copyright            : (C) 2012 Tom Holderness & Newcastle University
 contact              : http://www.students.ncl.ac.uk/tom.holderness
 email		            : tom.holderness@ncl.ac.uk 
 license		         : Relseased under Simplified BSD license (see LICENSE.txt)
@@ -26,21 +26,29 @@ from qgis.core import *
 import qgis.utils
 from qgis.core import QgsMapLayerRegistry
 
-from PyQt4 import QtCore, QtGui 
+from PyQt4 import QtCore, QtGui, uic
 
-from Ui_NetworkX_path import Ui_NetworkXPath
+
+from Ui_NetworkX_path_dock import Ui_NetworkXPath
 from Ui_NetworkX_build import Ui_NetworkXBuild
 
 # Checked for networkx module in NetworkX.initGui so can safely import here.
 import networkx as nx
 
-class NetworkXDialogPath(QtGui.QDialog):
-   def __init__(self):
-      QtGui.QDialog.__init__(self) 
-      # Set up the user interface from Designer. 
-      self.ui = Ui_NetworkXPath()
-      self.ui.setupUi(self)
+class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
+   def __init__(self, parent):
+      QtGui.QDockWidget.__init__(self, parent.iface.mainWindow()) 
       self.iface = qgis.utils.iface
+      # Set up the user interface from Designer. 
+      
+      
+      self.ui = Ui_NetworkXPath()
+      #print type(self.ui)
+      #self.ui = uic.loadUi('/home/a5245228/bin/python/IAM/network/networkx_qgis/NetworkX/Ui_NetworkX_path.ui')
+      #print type(self.ui)
+      #self.iface.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.ui)
+      self.ui.setupUi(self)
+      
       # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
