@@ -228,6 +228,12 @@ class NetworkXDialogBuild(QtGui.QDialog):
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL(
          "clicked()"),self.exit)
 
+      # List available algorithms
+      self.algorithms = {'shortest_path':'Shortest Path','dijkstra_path':'Dijkstra','astar_path':'A*'}
+      print self.algorithms
+      for key in self.algorithms:
+         print self.algorithms[key]
+         self.ui.comboBoxAlgorithms.addItem(self.algorithms[key])
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])
