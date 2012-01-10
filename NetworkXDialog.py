@@ -28,31 +28,14 @@ from qgis.core import QgsMapLayerRegistry
 
 from PyQt4 import QtCore, QtGui 
 
-#from Ui_NetworkX import Ui_NetworkX
 from Ui_NetworkX_path import Ui_NetworkXPath
 from Ui_NetworkX_build import Ui_NetworkXBuild
 
-# We've already checked for networkx module in NetworkX.initGui so can safely import here
+# Checked for networkx module in NetworkX.initGui so can safely import here.
 import networkx as nx
-
-
-
-
-# create the dialog for NetworkX
-#class NetworkXDialog(QtGui.QDialog):
-#   def __init__(self): 
-#      QtGui.QDialog.__init__(self)
-#      # Set up the user interface from Designer. 
-#      self.ui = Ui_NetworkX()
-#      self.ui.setupUi(self)
 
 class NetworkXDialogPath(QtGui.QDialog):
    def __init__(self):
-      #try:
-      #   import tom as nx
-      #except ImportError:
-      #   QtGui.QMessageBox.warning( self.iface.mainWindow(),"Error", "Selected node layer must be point geometry")
-         #raise ImportError("NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/") 
       QtGui.QDialog.__init__(self) 
       # Set up the user interface from Designer. 
       self.ui = Ui_NetworkXPath()
