@@ -54,12 +54,11 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
          self.exit)
 
       # List available algorithms
-      self.algorithms = {'shortest_path':'Shortest Path','dijkstra_path':'Dijkstra','astar_path':'A*'}
+      self.algorithms = {'Shortest Path':'shortest_path','Dijkstra':'dijkstra_path','A*':'astar_path'}
       print self.algorithms
       for key in self.algorithms:
-         print self.algorithms[key]
-         self.ui.comboBoxAlgorithm.addItem(self.algorithms[key])
-      self.ui.comboBoxAlgorithm.setCurrentIndex(1)
+         self.ui.comboBoxAlgorithm.addItem(key)
+      self.ui.comboBoxAlgorithm.setCurrentIndex(0)
 
       # Add available layers to the input combo box.
       self.pointfilelist = ["Point layers:"]
@@ -197,17 +196,24 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
      	#str_node = str_node.split(', ')
      	#print str_node[0]
       try: 
-            method = str(self.ui.comboBoxInputNodes.currentText())
-            p = nx.            
-            p = nx.shortest_path(DG1, sourceNode, targetNode)
+            key = str(self.ui.comboBoxAlgorithm.currentText())
+            print key
+            algorithm = self.algorithms[key]
+            method = getattr(nx, algorithm)
+            p = method(DG1, sourceNode, targetNode)
+            print DG1            
+            #method = self.algorithms[key]
+            #p = eval(nx+(self.algorithms[key])+(DG1, sourceNode, targetNode)
+            #'nx.%s(%s, %s, %s)' % (self.algorithms[keys],DG1, sourceNode, targetNode)
+            #p = nx.(DG1, sourceNode, targetNode)
             DG2 = nx.DiGraph()
             
             for i in range(0,len(p)-1):
                DG2.add_edge(p[i],p[i+1])
                DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
 
-            outdir = '/home/a5245228/'
-            nx.write_shp(DG2, '/home/a5245228/')
+            outdir = '/tmp/'
+            nx.write_shp(DG2, '/tmp/')
             # Get created files
             nodes = outdir+"nodes.shp"
             edges = outdir+"edges.shp"
