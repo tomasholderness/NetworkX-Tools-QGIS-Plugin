@@ -3,7 +3,7 @@
 Name		            : NetworkX Plugin
 Description          : Perform network analysis using the NetworkX package 
 Date                 : 03/01/2012
-copyright            : (C) 2010 Tom Holderness & Newcastle University
+copyright            : (C) 2012 Tom Holderness & Newcastle University
 contact              : http://www.students.ncl.ac.uk/tom.holderness
 email		            : tom.holderness@ncl.ac.uk 
 license		         : Relseased under Simplified BSD license (see LICENSE.txt)
@@ -39,7 +39,7 @@ class NetworkX:
     try:
         import networkx as nx
     except ImportError:
-        QMessageBox.warning(self.iface.mainWindow(),"NetworkX Plugin Error", "NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
+        QMessageBox.critical(self.iface.mainWindow(),"NetworkX Plugin Error", "NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
         raise ImportError("NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/") 
     # Create actions that will start plugin configuration (seperate action for each tool)
     self.actionBuild = QAction(QIcon(":/plugins/NetworkX/icon.png"), \
@@ -60,8 +60,6 @@ class NetworkX:
     #self.iface.removeToolBarIcon(self.action)
 
 
-
-
   # run methods that performs all the real work (one run method per tool)
   def runBuild(self): 
     # create and show the dialog 
@@ -72,7 +70,6 @@ class NetworkX:
     # See if OK was pressed
     #if result == 1:
     	#dlg.comboBoxInput.setEnabled(False)
-    	
 
   def runPath(self): 
     # create and show the dialog 
