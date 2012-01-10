@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_NetworkX_path_dock.ui'
 #
-# Created: Tue Jan 10 18:03:48 2012
+# Created: Tue Jan 10 18:28:45 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,12 +17,14 @@ except AttributeError:
 class Ui_NetworkXPath(object):
     def setupUi(self, NetworkXPath):
         NetworkXPath.setObjectName(_fromUtf8("NetworkXPath"))
-        NetworkXPath.resize(424, 404)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        NetworkXPath.resize(430, 408)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(NetworkXPath.sizePolicy().hasHeightForWidth())
         NetworkXPath.setSizePolicy(sizePolicy)
+        NetworkXPath.setMinimumSize(QtCore.QSize(261, 357))
+        NetworkXPath.setBaseSize(QtCore.QSize(0, 0))
         NetworkXPath.setWindowTitle(QtGui.QApplication.translate("NetworkXPath", "NetworkX Plugin - Shortest Path", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
@@ -105,10 +107,10 @@ class Ui_NetworkXPath(object):
         self.labelNodes_2.setGeometry(QtCore.QRect(10, 20, 171, 17))
         self.labelNodes_2.setText(QtGui.QApplication.translate("NetworkXPath", "Algorithm", None, QtGui.QApplication.UnicodeUTF8))
         self.labelNodes_2.setObjectName(_fromUtf8("labelNodes_2"))
-        self.comboBoxInputNodes_2 = QtGui.QComboBox(self.dockWidgetContents)
-        self.comboBoxInputNodes_2.setEnabled(True)
-        self.comboBoxInputNodes_2.setGeometry(QtCore.QRect(110, 10, 301, 31))
-        self.comboBoxInputNodes_2.setObjectName(_fromUtf8("comboBoxInputNodes_2"))
+        self.comboBoxAlgorithm = QtGui.QComboBox(self.dockWidgetContents)
+        self.comboBoxAlgorithm.setEnabled(True)
+        self.comboBoxAlgorithm.setGeometry(QtCore.QRect(110, 10, 301, 31))
+        self.comboBoxAlgorithm.setObjectName(_fromUtf8("comboBoxAlgorithm"))
         NetworkXPath.setWidget(self.dockWidgetContents)
 
         self.retranslateUi(NetworkXPath)

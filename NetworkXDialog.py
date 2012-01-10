@@ -53,6 +53,14 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
 
+      # List available algorithms
+      self.algorithms = {'shortest_path':'Shortest Path','dijkstra_path':'Dijkstra','astar_path':'A*'}
+      print self.algorithms
+      for key in self.algorithms:
+         print self.algorithms[key]
+         self.ui.comboBoxAlgorithm.addItem(self.algorithms[key])
+      self.ui.comboBoxAlgorithm.setCurrentIndex(1)
+
       # Add available layers to the input combo box.
       self.pointfilelist = ["Point layers:"]
       self.linefilelist = ["Line layers:"]            
@@ -189,6 +197,8 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
      	#str_node = str_node.split(', ')
      	#print str_node[0]
       try: 
+            method = str(self.ui.comboBoxInputNodes.currentText())
+            p = nx.            
             p = nx.shortest_path(DG1, sourceNode, targetNode)
             DG2 = nx.DiGraph()
             
@@ -228,12 +238,6 @@ class NetworkXDialogBuild(QtGui.QDialog):
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL(
          "clicked()"),self.exit)
 
-      # List available algorithms
-      self.algorithms = {'shortest_path':'Shortest Path','dijkstra_path':'Dijkstra','astar_path':'A*'}
-      print self.algorithms
-      for key in self.algorithms:
-         print self.algorithms[key]
-         self.ui.comboBoxAlgorithms.addItem(self.algorithms[key])
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])

@@ -124,7 +124,7 @@ class NetworkX:
     # create and show the dialog
     from NetworkXDialog import  NetworkXDialogPath
     self.dock_window = NetworkXDialogPath(self)
-    self.iface.mainWindow().addDockWidget(Qt.LeftDockWidgetArea, self.dock_window)
+    self.iface.mainWindow().addDockWidget(Qt.RightDockWidgetArea, self.dock_window)
     '''
     dlg = NetworkXDialogPath() 
     # show the dialog
