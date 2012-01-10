@@ -54,20 +54,27 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
          self.exit)
 
       # Add available layers to the input combo box.
-      self.filelist = ["Available layers:"]      
-      self.ui.comboBoxInputNodes.addItem(self.filelist[0])
-      self.ui.comboBoxInputEdges.addItem(self.filelist[0])
+      self.pointfilelist = ["Point layers:"]
+      self.linefilelist = ["Line layers:"]            
+      self.ui.comboBoxInputNodes.addItem(self.pointfilelist[0])
+      self.ui.comboBoxInputEdges.addItem(self.linefilelist[0])
       self.layermap = QgsMapLayerRegistry.instance().mapLayers()
       # Loop through loaded QGIS layers 
       for (key, layer) in self.layermap.iteritems():
          # Check layer type is vector
-         if layer.type() == 0:         
+         if layer.type() == 0:
             # Add to comboBox and filelist
-            self.ui.comboBoxInputNodes.addItem(layer.name())
-            self.ui.comboBoxInputEdges.addItem(layer.name())
-            self.filelist.append(layer.source())
+            if layer.geometryType() == 0:
+               self.ui.comboBoxInputNodes.addItem(layer.name())
+               self.pointfilelist.append(layer.source())
+               #global l1
+               #l1 = key
+               #print key
+            elif layer.geometryType() == 1:
+               self.ui.comboBoxInputEdges.addItem(layer.name())
+               self.linefilelist.append(layer.source())
             self.ui.comboBoxInputNodes.setCurrentIndex(1)
-	    self.ui.comboBoxInputEdges.setCurrentIndex(1)
+            self.ui.comboBoxInputEdges.setCurrentIndex(1)
       QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("clicked()"),
          self.sourcePoint)
       QtCore.QObject.connect(self.ui.btnTargetNode,QtCore.SIGNAL("clicked()"),
@@ -103,6 +110,22 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
        pntBuff = pntGeom.buffer( (self.canvas.mapUnitsPerPixel() * 3),0)
        rect = pntBuff.boundingBox()
        # get currentLayer and dataProvider
+       #print pointfilelist
+       
+       #print help(self.canvas.setCurrentLayer)
+       # Check that Node layer is layer currently selected layer
+       layers = qgis.utils.iface.mapCanvas().layers()
+       for layer in layers:
+         print layer.name()
+         nodes = str(self.ui.comboBoxInputNodes.currentText())
+         if layer.name() == nodes:
+            self.canvas.setCurrentLayer(layer)
+            break
+         else:
+            QtGui.QMessageBox.information( self.iface.mainWindow(),
+                        "NetworkX Plugin Info", 
+                           "Could not find node layer on map. Is it enabled in \
+                              layers list?" )
        cLayer = self.canvas.currentLayer()
        if cLayer:
                provider = cLayer.dataProvider()
@@ -145,7 +168,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       #x = (source[0])
       #y = (source[1])
       #print x,y
-      DG1 = nx.read_shp(str(self.filelist[
+      DG1 = nx.read_shp(str(self.linefilelist[
                                  self.ui.comboBoxInputEdges.currentIndex()]))
       #print DG1.nodes[0]
       for node in DG1.nodes():

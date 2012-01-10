@@ -16,7 +16,7 @@
   <widget class="QWidget" name="dockWidgetContents">
    <widget class="QLabel" name="labelNodes">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -56,7 +56,7 @@
      <string>Edge layer</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditSourceNode_">
+   <widget class="QLineEdit" name="lineEditSourceNode">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -76,7 +76,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Weight</string>
+     <string>Weights</string>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBoxInputEdges">
@@ -89,7 +89,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnOK_2">
+   <widget class="QPushButton" name="btnOK">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -174,7 +174,7 @@
    </widget>
    <widget class="QComboBox" name="comboBoxInputNodes">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
