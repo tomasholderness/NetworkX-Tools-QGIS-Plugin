@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_NetworkX_path_dock.ui'
 #
-# Created: Tue Jan 10 14:55:00 2012
+# Created: Tue Jan 10 17:01:33 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
