@@ -41,7 +41,8 @@ class NetworkXDialogPath(QtGui.QDialog):
       self.ui = Ui_NetworkXPath()
       self.ui.setupUi(self)
       # Cancel button closes
-      QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),self.exit)
+      QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
+         self.exit)
 
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
@@ -58,9 +59,12 @@ class NetworkXDialogPath(QtGui.QDialog):
             self.filelist.append(layer.source())
             self.ui.comboBoxInputNodes.setCurrentIndex(1)
 	    self.ui.comboBoxInputEdges.setCurrentIndex(1)
-      QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("clicked()"),self.sourcePoint)
-      QtCore.QObject.connect(self.ui.btnTargetNode,QtCore.SIGNAL("clicked()"),self.targetPoint)
-      QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),self.shortestPath)
+      QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("clicked()"),
+         self.sourcePoint)
+      QtCore.QObject.connect(self.ui.btnTargetNode,QtCore.SIGNAL("clicked()"),
+         self.targetPoint)
+      QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),
+         self.shortestPath)
 
    def sourcePoint(self):
       self.output = self.ui.lineEditSourceNode
@@ -77,10 +81,13 @@ class NetworkXDialogPath(QtGui.QDialog):
       # Create the appropriate map tool and connect the gotPoint() signal.
       #self.emitPoint = [[QgsMapToolEmitPoint]](mapCanvas)
       mapCanvas.setMapTool(self.point)
-      QtCore.QObject.connect(self.point, QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
+      QtCore.QObject.connect(self.point, 
+         QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), 
+         self.selectFeature)
 
    def selectFeature(self, point, button):
-       # Select Features function from http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
+       # Select Features function from 
+       # http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
        # setup the provider select to filter results based on a rectangle
        pntGeom = QgsGeometry.fromPoint(point)
        # scale-dependent buffer of 3 pixels-worth of map units
@@ -95,19 +102,26 @@ class NetworkXDialogPath(QtGui.QDialog):
 		       cLayer.removeSelection()
 		       feat = QgsFeature()
 		       # create the select statement
-		       provider.select([],rect) # the arguments mean no attributes returned, and do a bbox filter with our buffered rectangle to limit the amount of features
+		       provider.select([],rect) 
+		       # the arguments mean no attributes returned, and do a bbox filter 
+		       #with our buffered rectangle to limit the amount of features.
 		       while provider.nextFeature(feat):
-		               # if the feat geom returned from the selection intersects our point then put it in a list
+		               # if the feat geom returned from the selection intersects 
+		               #our point then put it in a list
 		               if feat.geometry().intersects(rect):
 				       cLayer.select(feat.id())
 		                       self.output.clear()
-		                       self.output.insert(str(feat.geometry().asPoint().x())+','+str(feat.geometry().asPoint().y()))
+		                       self.output.insert(
+		                           str(feat.geometry().asPoint().x())+','
+		                           +str(feat.geometry().asPoint().y()))
 				       break
 				         # stop here so as to select one point only. 
 	       else:
-                       QtGui.QMessageBox.warning( self.iface.mainWindow(),"Error", "Selected node layer must be point geometry")	               
+                       QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                        "Error", "Selected node layer must be point geometry")	               
        else:
-               QtGui.QMessageBox.information( self.iface.mainWindow(),"Info", "No layer currently selected in TOC" )
+               QtGui.QMessageBox.information( self.iface.mainWindow(),
+                        "Info", "No layer currently selected in TOC" )
 
    def shortestPath(self):
       #read source/target points from gui
@@ -134,7 +148,6 @@ class NetworkXDialogPath(QtGui.QDialog):
             targetNode = node
             print targetNode
          #else:
-         #   QtGui.QMessageBox.information( self.iface.mainWindow(),"Info", "Node not found in Network") 
       #elif str(node[1]) == y:
       #	print 
      	#str_node = str(node)
@@ -155,8 +168,10 @@ class NetworkXDialogPath(QtGui.QDialog):
       nodes = outdir+"nodes.shp"
       edges = outdir+"edges.shp"
       # Add to QGIS instance
-      qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", "ogr")
-      qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
+      qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", 
+                                       "ogr")
+      qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", 
+                                       "ogr")
 	
    def exit(self):
        self.close() 
@@ -172,7 +187,8 @@ class NetworkXDialogBuild(QtGui.QDialog):
       ##sys.stdout.write('testing 1...\r')
 
       # Cancel button closes
-      QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),self.exit)
+      QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL(
+         "clicked()"),self.exit)
 
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
