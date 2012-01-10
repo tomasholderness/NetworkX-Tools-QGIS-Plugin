@@ -1,44 +1,62 @@
 """
-/***************************************************************************
-Name		     : NetworkX Plugin
+/******************************************************************************
+Name		            : NetworkX Plugin
 Description          : Perform network analysis using the NetworkX package 
 Date                 : 03/01/2012
 copyright            : (C) 2010 Tom Holderness & Newcastle University
 contact              : http://www.students.ncl.ac.uk/tom.holderness
-email		     : tom.holderness@ncl.ac.uk 
-license		     : Relseased under Simplified BSD license (see LICENSE.txt)
- ***************************************************************************/
+email		            : tom.holderness@ncl.ac.uk 
+license		         : Relseased under Simplified BSD license (see LICENSE.txt)
+******************************************************************************/
 """
+
+__author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
+
+# Change log
+# 07-01-2012 - TH - Updated header metadata.
+# 07-01-2012 - TH - Made inital commit to local git repo on 478.
+# 07-01-2012 - TH - Moved check for NetworkX module to NetworkX.initGui
+
 import sys
-import qgis
-#from qgis import *
-from qgis.gui import *
-import qgis.utils
-from qgis.core import QgsMapLayerRegistry
-from PyQt4 import QtCore, QtGui 
-from Ui_NetworkX import Ui_NetworkX
-from Ui_NetworkX_path import Ui_NetworkXPath
-from Ui_NetworkX_build import Ui_NetworkXBuild
-from qgis.core import *
-# Import networkx
-import networkx as nx
 from decimal import Decimal
 
+import qgis
+from qgis.gui import *
+from qgis.core import *
+import qgis.utils
+from qgis.core import QgsMapLayerRegistry
+
+from PyQt4 import QtCore, QtGui 
+
+#from Ui_NetworkX import Ui_NetworkX
+from Ui_NetworkX_path import Ui_NetworkXPath
+from Ui_NetworkX_build import Ui_NetworkXBuild
+
+# We've already checked for networkx module in NetworkX.initGui so can safely import here
+import networkx as nx
+
+
+
+
 # create the dialog for NetworkX
-class NetworkXDialog(QtGui.QDialog):
-   def __init__(self): 
-    QtGui.QDialog.__init__(self) 
-    # Set up the user interface from Designer. 
-    self.ui = Ui_NetworkX()
-    self.ui.setupUi(self)
+#class NetworkXDialog(QtGui.QDialog):
+#   def __init__(self): 
+#      QtGui.QDialog.__init__(self)
+#      # Set up the user interface from Designer. 
+#      self.ui = Ui_NetworkX()
+#      self.ui.setupUi(self)
 
 class NetworkXDialogPath(QtGui.QDialog):
-   def __init__(self): 
+   def __init__(self):
+      #try:
+      #   import tom as nx
+      #except ImportError:
+      #   QtGui.QMessageBox.warning( self.iface.mainWindow(),"Error", "Selected node layer must be point geometry")
+         #raise ImportError("NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/") 
       QtGui.QDialog.__init__(self) 
       # Set up the user interface from Designer. 
       self.ui = Ui_NetworkXPath()
       self.ui.setupUi(self)
-
       # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),self.exit)
 
@@ -70,7 +88,7 @@ class NetworkXDialogPath(QtGui.QDialog):
       self.collectPoint()
 
    def collectPoint(self):
-      self.iface = qgis.utils.iface
+      #self.iface = qgis.utils.iface
       self.canvas = qgis.utils.iface.mapCanvas()
       self.clickTool = QgsMapToolEmitPoint(self.canvas)
       # out click tool will emit a QgsPoint on every click
