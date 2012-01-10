@@ -71,30 +71,13 @@ class NetworkXDialogPath(QtGui.QDialog):
       self.collectPoint()
 
    def collectPoint(self):
-      #self.iface = qgis.utils.iface
       self.canvas = qgis.utils.iface.mapCanvas()
-      self.clickTool = QgsMapToolEmitPoint(self.canvas)
-      # out click tool will emit a QgsPoint on every click
-      # connect our custom function to a clickTool signal that the canvas was clicked
-      print "loaded path"
       self.point=QgsMapToolEmitPoint(qgis.utils.iface.mapCanvas())
-      #print "self.point"
-      print self.point
-      #QtCore.QObject.connect(self.point, QtCore.SIGNAL("canvasClicked(const QgsPoint &,Qt::MouseButton)"),self.dmfunc)
-
       mapCanvas=qgis.utils.iface.mapCanvas()
       # Create the appropriate map tool and connect the gotPoint() signal.
       #self.emitPoint = [[QgsMapToolEmitPoint]](mapCanvas)
       mapCanvas.setMapTool(self.point)
       QtCore.QObject.connect(self.point, QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
-
-
-   def handleMouseDown(self, point, button):
-       #self.dlg.clearTextBrowser()
-       #self.dlg.setTextBrowser( str(point.x()) + " , " +str(point.y()) )
-       #QMessageBox.information( self.iface.mainWindow(),"Info", "X,Y = %s,%s" % (str(point.x()),str(point.y())) )
-       print "handleMouseDown"
-       self.ui.lineEditSourceNode.insert(str(point.x()), str(point.y()))
 
    def selectFeature(self, point, button):
        # Select Features function from http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
