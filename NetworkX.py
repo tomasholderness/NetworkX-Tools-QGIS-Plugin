@@ -1,21 +1,22 @@
 """
-/***************************************************************************
-Name			 	 : NetworkX Plugin
-Description          : Perform network analysis using the NetworkX package
-Date                 : 03/Jan/12 
-copyright            : (C) 2012 by Tom Holderness /Newcastle University
-email                : tom.holderness@ncl.ac.uk 
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/******************************************************************************
+Name		            : NetworkX Plugin
+Description          : Perform network analysis using the NetworkX package 
+Date                 : 03/01/2012
+copyright            : (C) 2010 Tom Holderness & Newcastle University
+contact              : http://www.students.ncl.ac.uk/tom.holderness
+email		            : tom.holderness@ncl.ac.uk 
+license		         : Relseased under Simplified BSD license (see LICENSE.txt)
+******************************************************************************/
 """
+
+__author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
+
+# Change log
+# 07-01-2012 - TH - Updated header metadata.
+# 07-01-2012 - TH - Made inital commit to local git repo on 478.
+# 07-01-2012 - TH - Added check for NetworkX module in initGui
+
 # Import the PyQt and QGIS libraries
 from PyQt4.QtCore import * 
 from PyQt4.QtGui import *
@@ -24,7 +25,7 @@ import qgis
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
-from NetworkXDialog import NetworkXDialog
+#from NetworkXDialog import NetworkXDialog
 from NetworkXDialog import NetworkXDialogPath
 from NetworkXDialog import NetworkXDialogBuild
 
@@ -34,7 +35,12 @@ class NetworkX:
     # Save reference to the QGIS interface
     self.iface = iface
 
-  def initGui(self):  
+  def initGui(self):
+    try:
+        import networkx as nx
+    except ImportError:
+        QMessageBox.warning(self.iface.mainWindow(),"NetworkX Plugin Error", "NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
+        raise ImportError("NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/") 
     # Create actions that will start plugin configuration (seperate action for each tool)
     self.actionBuild = QAction(QIcon(":/plugins/NetworkX/icon.png"), \
         "Build Network", self.iface.mainWindow())
