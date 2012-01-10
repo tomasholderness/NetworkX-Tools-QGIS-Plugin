@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>424</width>
-    <height>270</height>
+    <height>404</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>NetworkX Plugin - Shortest Path</string>
@@ -21,7 +27,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>70</y>
       <width>171</width>
       <height>17</height>
      </rect>
@@ -34,7 +40,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
+      <y>240</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -47,7 +53,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>110</y>
       <width>171</width>
       <height>17</height>
      </rect>
@@ -60,7 +66,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>130</y>
+      <y>200</y>
       <width>261</width>
       <height>27</height>
      </rect>
@@ -70,7 +76,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>150</y>
       <width>171</width>
       <height>17</height>
      </rect>
@@ -83,7 +89,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>40</y>
+      <y>100</y>
       <width>301</width>
       <height>31</height>
      </rect>
@@ -96,7 +102,7 @@
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>210</y>
+      <y>340</y>
       <width>81</width>
       <height>27</height>
      </rect>
@@ -109,7 +115,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>170</y>
+      <y>240</y>
       <width>261</width>
       <height>27</height>
      </rect>
@@ -119,7 +125,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>80</y>
+      <y>140</y>
       <width>301</width>
       <height>31</height>
      </rect>
@@ -129,7 +135,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>210</y>
+      <y>340</y>
       <width>81</width>
       <height>27</height>
      </rect>
@@ -142,7 +148,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>130</y>
+      <y>200</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -159,7 +165,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>170</y>
+      <y>240</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -179,7 +185,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>0</y>
+      <y>60</y>
       <width>301</width>
       <height>31</height>
      </rect>
@@ -189,13 +195,95 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
+      <y>200</y>
       <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Source Node</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="LabelSave">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>300</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Output folder</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditSave">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>300</y>
+      <width>261</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSave_2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>300</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>edit.png</normaloff>edit.png</iconset>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxOverwrite">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>181</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Overwrite existing files</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelNodes_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>171</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Algorithm</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxInputNodes_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>10</y>
+      <width>301</width>
+      <height>31</height>
+     </rect>
     </property>
    </widget>
   </widget>
