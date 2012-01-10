@@ -87,26 +87,7 @@ class NetworkXDialogPath(QtGui.QDialog):
       #self.emitPoint = [[QgsMapToolEmitPoint]](mapCanvas)
       mapCanvas.setMapTool(self.point)
       QtCore.QObject.connect(self.point, QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
-      #handleMouseDown. selectFeature
-   def dmfunc(self):
-      print "dmfunc"
-      #result = QtCore.QObject.connect(self.clickTool, QtColineEdit_3re.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.handleMouseDown)
-      #print result
-        #QMessageBox.information( self.iface.mainWindow(),"Info", "connect = %s"%str(result) )
 
-        # connect our select function to the canvasClicked signal
-      #result = QtCore.QObject.connect(self.clickTool, QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
-      #print result
-
-      #QtGui.QMessageBox.information( self.iface.mainWindow(),"Info", "connect = %s"%str(result) )
-      
-      #print "Path class"
-      #print DG1.edges()
-      # connect our select function to the canvasClicked signal
-      #result = QtCore.QObject.connect(self.clickTool, SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
-      #QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),self.exit)
-      #result = QtCore.QObject.connect(self.clickTool, QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.selectFeature)
-      #print result
 
    def handleMouseDown(self, point, button):
        #self.dlg.clearTextBrowser()
