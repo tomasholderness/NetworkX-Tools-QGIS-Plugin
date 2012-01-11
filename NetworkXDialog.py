@@ -84,7 +84,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                self.linefilelist.append(layer.source())
             self.ui.comboBoxInputNodes.setCurrentIndex(1)
             self.ui.comboBoxInputEdges.setCurrentIndex(1)
-      QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("clicked()"),
+      QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("pressed()"),
          self.sourcePoint)
       QtCore.QObject.connect(self.ui.btnTargetNode,QtCore.SIGNAL("clicked()"),
          self.targetPoint)
@@ -125,8 +125,8 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
        # Check that Node layer is layer currently selected layer
        layers = qgis.utils.iface.mapCanvas().layers()
        for layer in layers:
-         print layer.name()
          nodes = str(self.ui.comboBoxInputNodes.currentText())
+         print layer, nodes
          if layer.name() == nodes:
             self.canvas.setCurrentLayer(layer)
             break
@@ -150,11 +150,13 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
 		               # if the feat geom returned from the selection intersects 
 		               #our point then put it in a list
 		               if feat.geometry().intersects(rect):
-				       cLayer.select(feat.id())
+		                       cLayer.select(feat.id())
 		                       self.output.clear()
 		                       self.output.insert(
 		                           str(feat.geometry().asPoint().x())+','
 		                           +str(feat.geometry().asPoint().y()))
+		                       attrs = feat.attributeMap()
+		                       print attrs
 				       break
 				         # stop here so as to select one point only. 
 	       else:
@@ -165,6 +167,50 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                QtGui.QMessageBox.information( self.iface.mainWindow(),
                         "NetworkX Plugin Info", 
                            "No layer currently selected in TOC" )
+                           
+       layers = qgis.utils.iface.mapCanvas().layers()
+       for layer in layers:
+         edges = str(self.ui.comboBoxInputEdges.currentText())
+         print layer.name(), edges
+         if layer.name() == edges:
+            self.canvas.setCurrentLayer(layer)
+            cLayer = self.canvas.currentLayer()
+            provider = cLayer.dataProvider()
+            # clear any previous selection
+            cLayer.removeSelection()
+            feat = QgsFeature()
+            allAttrs = provider.attributeIndexes()
+            provider.select(allAttrs)
+            fields = provider.fields() 
+            for name in fields:
+               self.ui.comboBoxInputWeight.addItem(fields[name].name())
+               print fields[name].type()
+               print fields[name].typeName()
+                  #Test for type
+            #print cLayer.fieldNames()
+	         # create the select statement
+            #provider.select([],rect) 
+	         # the arguments mean no attributes returned, and do a bbox filter 
+	         #with our buffered rectangle to limit the amount of features.
+            while provider.nextFeature(feat):
+            # if the feat geom returned from the selection intersects 
+            #our point then put it in a list
+            #if feat.geometry().intersects(rect):
+            #        cLayer.select(feat.id())
+            #        self.output.clear()
+            #        self.output.insert(
+            #            str(feat.geometry().asPoint().x())+','
+            #            +str(feat.geometry().asPoint().y()))
+               attrs = feat.attributeMap()
+               #for (key, attr) in attrs.iteritems():
+                  #print "%d: %s" % (key, attr.toString())
+               #print "attributes:",attrs
+            break
+         else:
+            QtGui.QMessageBox.information( self.iface.mainWindow(),
+                        "NetworkX Plugin Info", 
+                           "Could not find edge layer on map. Is it enabled in \
+                              layers list?" )
 
    def shortestPath(self):
       #read source/target points from gui
@@ -200,11 +246,11 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
      	#print str_node[0]
       try: 
             key = str(self.ui.comboBoxAlgorithm.currentText())
-            print key
+            #print key
             algorithm = self.algorithms[key]
             method = getattr(nx, algorithm)
             p = method(DG1, sourceNode, targetNode)
-            print DG1            
+            #print DG1            
             #method = self.algorithms[key]
             #p = eval(nx+(self.algorithms[key])+(DG1, sourceNode, targetNode)
             #'nx.%s(%s, %s, %s)' % (self.algorithms[keys],DG1, sourceNode, targetNode)
