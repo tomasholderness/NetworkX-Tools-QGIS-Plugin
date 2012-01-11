@@ -35,6 +35,8 @@ from Ui_NetworkX_build import Ui_NetworkXBuild
 # Checked for networkx module in NetworkX.initGui so can safely import here.
 import networkx as nx
 
+import nx_shp 
+
 class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
    def __init__(self, parent):
       QtGui.QDockWidget.__init__(self, parent.iface.mainWindow()) 
@@ -170,13 +172,14 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       target = str(self.ui.lineEditTargetNode.text())
       source = source.split(',')
       target = target.split(',')
-      #x = float(source[0])
-      #y = float(source[1])
-      #x = (source[0])
-      #y = (source[1])
-      #print x,y
+
       DG1 = nx.read_shp(str(self.linefilelist[
                                  self.ui.comboBoxInputEdges.currentIndex()]))
+      
+      # Test for undirected network.
+      if self.ui.checkBoxUndirected.isChecked() == True:
+         print 'undirected'
+         DG1 = DG1.to_undirected()
       #print DG1.nodes[0]
       for node in DG1.nodes():
       #print node[0]
@@ -277,14 +280,14 @@ class NetworkXDialogBuild(QtGui.QDialog):
          # Build directed network from loaded shapefile
          print self.ui.comboBoxInput.currentIndex()
          print type(self.filelist[1])
-         global DG1
+         #global DG1
          DG1 = nx.read_shp(str(self.filelist[
                                  self.ui.comboBoxInput.currentIndex()]))
          #print DG1.edges() 
          # Write out directed network to nodes and edges shapefiles using NX
          print outdir
 	 print DG1.nodes()
-         nx.write_shp(DG1, outdir)
+         nx_shp.write_shp(DG1, outdir)
          
          # Get created files
          nodes = outdir+"nodes.shp"

@@ -32,81 +32,6 @@
    <string>NetworkX Plugin - Shortest Path</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <widget class="QLabel" name="labelNodes">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>70</y>
-      <width>171</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Node layer</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelTargetNode">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>270</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Target Node</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelEdges">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>110</y>
-      <width>171</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Edge layer</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditSourceNode">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>230</y>
-      <width>261</width>
-      <height>27</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelEdges_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>150</y>
-      <width>171</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Weights</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBoxInputEdges">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>100</y>
-      <width>301</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnOK">
     <property name="enabled">
      <bool>true</bool>
@@ -123,26 +48,6 @@
      <string>OK</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditTargetNode">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>270</y>
-      <width>261</width>
-      <height>27</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBoxInputWeight">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>140</y>
-      <width>301</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnCancel">
     <property name="geometry">
      <rect>
@@ -154,106 +59,6 @@
     </property>
     <property name="text">
      <string>Cancel</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnSourceNode">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>230</y>
-      <width>31</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>edit.png</normaloff>edit.png</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnTargetNode">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>270</y>
-      <width>31</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>edit.png</normaloff>edit.png</iconset>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBoxInputNodes">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>60</y>
-      <width>301</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSourceNode">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>230</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Source Node</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="LabelSave">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>330</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Output folder</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditSave">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>330</y>
-      <width>261</width>
-      <height>27</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnSave_2">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>330</y>
-      <width>31</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>edit.png</normaloff>edit.png</iconset>
     </property>
    </widget>
    <widget class="QLabel" name="labelNodes_2">
@@ -316,7 +121,7 @@
       <enum>QFrame::Raised</enum>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="checkBoxUndirected">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -327,6 +132,81 @@
      </property>
      <property name="text">
       <string>Graph is undirected</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelNodes">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>171</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Node layer</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelEdges">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>171</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Edge layer</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxInputNodes">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>10</y>
+       <width>301</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxInputEdges">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>50</y>
+       <width>301</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelEdges_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>171</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Weights</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxInputWeight">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>90</y>
+       <width>301</width>
+       <height>31</height>
+      </rect>
      </property>
     </widget>
    </widget>
@@ -346,7 +226,7 @@
      <enum>QFrame::Raised</enum>
     </property>
    </widget>
-   <widget class="QFrame" name="frame_4">
+   <widget class="QFrame" name="frameOutput">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -374,29 +254,127 @@
       <string>Overwrite existing files</string>
      </property>
     </widget>
+    <widget class="QLabel" name="LabelSave">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Output folder</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnSave_2">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>10</y>
+       <width>31</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>edit.png</normaloff>edit.png</iconset>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditSave">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>10</y>
+       <width>261</width>
+       <height>27</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
-   <zorder>frame_4</zorder>
-   <zorder>labelNodes</zorder>
-   <zorder>labelTargetNode</zorder>
-   <zorder>labelEdges</zorder>
-   <zorder>lineEditSourceNode</zorder>
-   <zorder>labelEdges_2</zorder>
-   <zorder>comboBoxInputEdges</zorder>
-   <zorder>btnOK</zorder>
-   <zorder>lineEditTargetNode</zorder>
-   <zorder>comboBoxInputWeight</zorder>
-   <zorder>btnCancel</zorder>
-   <zorder>btnSourceNode</zorder>
-   <zorder>btnTargetNode</zorder>
-   <zorder>comboBoxInputNodes</zorder>
-   <zorder>labelSourceNode</zorder>
-   <zorder>LabelSave</zorder>
-   <zorder>lineEditSave</zorder>
-   <zorder>btnSave_2</zorder>
-   <zorder>labelNodes_2</zorder>
-   <zorder>comboBoxAlgorithm</zorder>
-   <zorder>frame</zorder>
-   <zorder>frame_3</zorder>
+   <widget class="QLineEdit" name="lineEditTargetNode">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>270</y>
+      <width>261</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelTargetNode">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>270</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Target Node</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSourceNode">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>230</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source Node</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnTargetNode">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>270</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>edit.png</normaloff>edit.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSourceNode">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>230</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>edit.png</normaloff>edit.png</iconset>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditSourceNode">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>230</y>
+      <width>261</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
