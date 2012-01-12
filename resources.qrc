@@ -1,5 +1,6 @@
-<RCC> 
-  <qresource prefix="/plugins/NetworkX" > 
-    <file>icon.png</file> 
-  </qresource> 
-</RCC> 
+<RCC>
+    <qresource prefix="/plugins/NetworkX">
+        <file>icon.png</file>
+        <file>edit.png</file>
+    </qresource>
+</RCC>

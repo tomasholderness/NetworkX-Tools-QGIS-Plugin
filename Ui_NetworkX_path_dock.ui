@@ -361,8 +361,8 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>edit.png</normaloff>edit.png</iconset>
+     <iconset resource="resources.qrc">
+      <normaloff>:/plugins/NetworkX/edit.png</normaloff>:/plugins/NetworkX/edit.png</iconset>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditSourceNode">
@@ -377,6 +377,8 @@
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
