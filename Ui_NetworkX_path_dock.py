@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_NetworkX_path_dock.ui'
 #
-# Created: Thu Jan 12 18:03:56 2012
+# Created: Thu Jan 12 20:31:08 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -101,18 +101,18 @@ class Ui_NetworkXPath(object):
         self.LabelSave.setGeometry(QtCore.QRect(10, 10, 101, 31))
         self.LabelSave.setText(QtGui.QApplication.translate("NetworkXPath", "Output folder", None, QtGui.QApplication.UnicodeUTF8))
         self.LabelSave.setObjectName(_fromUtf8("LabelSave"))
-        self.btnSave_2 = QtGui.QPushButton(self.frameOutput)
-        self.btnSave_2.setGeometry(QtCore.QRect(110, 10, 31, 27))
-        self.btnSave_2.setText(_fromUtf8(""))
+        self.btnSave = QtGui.QPushButton(self.frameOutput)
+        self.btnSave.setGeometry(QtCore.QRect(110, 10, 31, 31))
+        self.btnSave.setText(_fromUtf8(""))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("edit.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnSave_2.setIcon(icon)
-        self.btnSave_2.setObjectName(_fromUtf8("btnSave_2"))
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/NetworkX/icon/mActionFolder.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnSave.setIcon(icon)
+        self.btnSave.setObjectName(_fromUtf8("btnSave"))
         self.lineEditSave = QtGui.QLineEdit(self.frameOutput)
-        self.lineEditSave.setGeometry(QtCore.QRect(150, 10, 261, 27))
+        self.lineEditSave.setGeometry(QtCore.QRect(150, 10, 261, 31))
         self.lineEditSave.setObjectName(_fromUtf8("lineEditSave"))
         self.lineEditTargetNode = QtGui.QLineEdit(self.dockWidgetContents)
-        self.lineEditTargetNode.setGeometry(QtCore.QRect(160, 270, 261, 27))
+        self.lineEditTargetNode.setGeometry(QtCore.QRect(160, 270, 261, 31))
         self.lineEditTargetNode.setObjectName(_fromUtf8("lineEditTargetNode"))
         self.labelTargetNode = QtGui.QLabel(self.dockWidgetContents)
         self.labelTargetNode.setGeometry(QtCore.QRect(20, 270, 91, 31))
@@ -123,19 +123,19 @@ class Ui_NetworkXPath(object):
         self.labelSourceNode.setText(QtGui.QApplication.translate("NetworkXPath", "Source Node", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSourceNode.setObjectName(_fromUtf8("labelSourceNode"))
         self.btnTargetNode = QtGui.QPushButton(self.dockWidgetContents)
-        self.btnTargetNode.setGeometry(QtCore.QRect(120, 270, 31, 27))
+        self.btnTargetNode.setGeometry(QtCore.QRect(120, 270, 31, 31))
         self.btnTargetNode.setText(_fromUtf8(""))
-        self.btnTargetNode.setIcon(icon)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/NetworkX/icon/coordinate_capture.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnTargetNode.setIcon(icon1)
         self.btnTargetNode.setObjectName(_fromUtf8("btnTargetNode"))
         self.btnSourceNode = QtGui.QPushButton(self.dockWidgetContents)
-        self.btnSourceNode.setGeometry(QtCore.QRect(120, 230, 31, 27))
+        self.btnSourceNode.setGeometry(QtCore.QRect(120, 230, 31, 31))
         self.btnSourceNode.setText(_fromUtf8(""))
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/NetworkX/edit.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnSourceNode.setIcon(icon1)
         self.btnSourceNode.setObjectName(_fromUtf8("btnSourceNode"))
         self.lineEditSourceNode = QtGui.QLineEdit(self.dockWidgetContents)
-        self.lineEditSourceNode.setGeometry(QtCore.QRect(160, 230, 261, 27))
+        self.lineEditSourceNode.setGeometry(QtCore.QRect(160, 230, 261, 31))
         self.lineEditSourceNode.setObjectName(_fromUtf8("lineEditSourceNode"))
         NetworkXPath.setWidget(self.dockWidgetContents)
 

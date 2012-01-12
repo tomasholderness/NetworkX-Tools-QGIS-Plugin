@@ -98,7 +98,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
          self.targetPoint)
       QtCore.QObject.connect(self.ui.btnOK, QtCore.SIGNAL("clicked()"),
          self.shortestPath)
-      QtCore.QObject.connect(self.ui.btnSave_2, QtCore.SIGNAL("clicked()"),self.outputFile)
+      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
       
 
    def attributeWeights(self):

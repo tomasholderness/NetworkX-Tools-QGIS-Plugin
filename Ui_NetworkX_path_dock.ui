@@ -267,21 +267,21 @@
       <string>Output folder</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnSave_2">
+    <widget class="QPushButton" name="btnSave">
      <property name="geometry">
       <rect>
        <x>110</x>
        <y>10</y>
        <width>31</width>
-       <height>27</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>edit.png</normaloff>edit.png</iconset>
+      <iconset resource="resources.qrc">
+       <normaloff>:/plugins/NetworkX/icon/mActionFolder.png</normaloff>:/plugins/NetworkX/icon/mActionFolder.png</iconset>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEditSave">
@@ -290,7 +290,7 @@
        <x>150</x>
        <y>10</y>
        <width>261</width>
-       <height>27</height>
+       <height>31</height>
       </rect>
      </property>
     </widget>
@@ -301,7 +301,7 @@
       <x>160</x>
       <y>270</y>
       <width>261</width>
-      <height>27</height>
+      <height>31</height>
      </rect>
     </property>
    </widget>
@@ -337,15 +337,15 @@
       <x>120</x>
       <y>270</y>
       <width>31</width>
-      <height>27</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>edit.png</normaloff>edit.png</iconset>
+     <iconset resource="resources.qrc">
+      <normaloff>:/plugins/NetworkX/icon/coordinate_capture.png</normaloff>:/plugins/NetworkX/icon/coordinate_capture.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="btnSourceNode">
@@ -354,7 +354,7 @@
       <x>120</x>
       <y>230</y>
       <width>31</width>
-      <height>27</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -362,7 +362,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/plugins/NetworkX/edit.png</normaloff>:/plugins/NetworkX/edit.png</iconset>
+      <normaloff>:/plugins/NetworkX/icon/coordinate_capture.png</normaloff>:/plugins/NetworkX/icon/coordinate_capture.png</iconset>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditSourceNode">
@@ -371,7 +371,7 @@
       <x>160</x>
       <y>230</y>
       <width>261</width>
-      <height>27</height>
+      <height>31</height>
      </rect>
     </property>
    </widget>
