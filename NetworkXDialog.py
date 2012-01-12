@@ -18,6 +18,8 @@ __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 # 07-01-2012 - TH - Moved check for NetworkX module to NetworkX.initGui
 
 import sys
+import os
+import glob
 from decimal import Decimal
 
 import qgis
@@ -63,8 +65,8 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       self.ui.comboBoxAlgorithm.setCurrentIndex(0)
 
       # Add available layers to the input combo box.
-      self.pointfilelist = ["Point layers:"]
-      self.linefilelist = ["Line layers:"]            
+      self.pointfilelist = ["Shapefile point layers:"]
+      self.linefilelist = ["Shapefile line layers:"]            
       self.ui.comboBoxInputNodes.addItem(self.pointfilelist[0])
       self.ui.comboBoxInputEdges.addItem(self.linefilelist[0])
       self.layermap = QgsMapLayerRegistry.instance().mapLayers()
@@ -72,25 +74,57 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       for (key, layer) in self.layermap.iteritems():
          # Check layer type is vector
          if layer.type() == 0:
+            #Check layer is from shapefile
+            if str(layer.source()).endswith('.shp'):
             # Add to comboBox and filelist
-            if layer.geometryType() == 0:
-               self.ui.comboBoxInputNodes.addItem(layer.name())
-               self.pointfilelist.append(layer.source())
-               #global l1
-               #l1 = key
-               #print key
-            elif layer.geometryType() == 1:
-               self.ui.comboBoxInputEdges.addItem(layer.name())
-               self.linefilelist.append(layer.source())
-            self.ui.comboBoxInputNodes.setCurrentIndex(1)
-            self.ui.comboBoxInputEdges.setCurrentIndex(1)
-      QtCore.QObject.connect(self.ui.btnSourceNode,QtCore.SIGNAL("pressed()"),
+                if layer.geometryType() == 0:
+                   self.ui.comboBoxInputNodes.addItem(layer.name())
+                   self.pointfilelist.append(layer.source())
+                elif layer.geometryType() == 1:
+                   self.ui.comboBoxInputEdges.addItem(layer.name())
+                   self.linefilelist.append(layer.source())
+                self.ui.comboBoxInputNodes.setCurrentIndex(1)
+                self.ui.comboBoxInputEdges.setCurrentIndex(1)
+         else:
+             self.ui.comboBoxInputNodes.setCurrentIndex(0)
+             self.ui.comboBoxInputEdges.setCurrentIndex(0)
+      # Updated comboBoxEdges internally so updated weights.
+      self.attributeWeights()
+      
+      QtCore.QObject.connect(self.ui.comboBoxInputEdges, QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
+      QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("pressed()"),
          self.sourcePoint)
-      QtCore.QObject.connect(self.ui.btnTargetNode,QtCore.SIGNAL("clicked()"),
+      QtCore.QObject.connect(self.ui.btnTargetNode, QtCore.SIGNAL("clicked()"),
          self.targetPoint)
-      QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),
+      QtCore.QObject.connect(self.ui.btnOK, QtCore.SIGNAL("clicked()"),
          self.shortestPath)
+      QtCore.QObject.connect(self.ui.btnSave_2, QtCore.SIGNAL("clicked()"),self.outputFile)
+      
 
+   def attributeWeights(self):
+      # Clear the attributeComboBoxList
+      self.ui.comboBoxInputWeight.clear()
+      self.ui.comboBoxInputWeight.addItem('None')
+      
+      # Add new attributes of layer to weights.         
+      for (key, layer) in self.layermap.iteritems():
+          edges = str(self.ui.comboBoxInputEdges.currentText())
+          print layer.name(), edges
+          if layer.name() == edges:
+              provider = layer.dataProvider()
+              try:
+                  fields = provider.fields() 
+                  for name in fields:
+                      if fields[name].typeName() == 'Integer' or fields[name].typeName() == 'Real':
+                              self.ui.comboBoxInputWeight.addItem(fields[name].name())
+                              self.ui.comboBoxInputWeight.setCurrentIndex(0)
+              except TypeError:
+                   self.ui.comboBoxInputWeight.setCurrentIndex(0)
+                   QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                        "NetworkX Plugin Error", 
+                           "Error reading %s attribute table." % edges)
+          else:
+              self.ui.comboBoxInputWeight.setCurrentIndex(0)
    def sourcePoint(self):
       self.output = self.ui.lineEditSourceNode
       self.collectPoint()
@@ -118,163 +152,139 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
        # scale-dependent buffer of 3 pixels-worth of map units
        pntBuff = pntGeom.buffer( (self.canvas.mapUnitsPerPixel() * 3),0)
        rect = pntBuff.boundingBox()
-       # get currentLayer and dataProvider
-       #print pointfilelist
-       
-       #print help(self.canvas.setCurrentLayer)
-       # Check that Node layer is layer currently selected layer
        layers = qgis.utils.iface.mapCanvas().layers()
+       nodes = str(self.ui.comboBoxInputNodes.currentText())
        for layer in layers:
-         nodes = str(self.ui.comboBoxInputNodes.currentText())
-         print layer, nodes
          if layer.name() == nodes:
-            self.canvas.setCurrentLayer(layer)
-            break
-         else:
-            QtGui.QMessageBox.information( self.iface.mainWindow(),
-                        "NetworkX Plugin Info", 
-                           "Could not find node layer on map. Is it enabled in \
-                              layers list?" )
-       cLayer = self.canvas.currentLayer()
-       if cLayer:
-               provider = cLayer.dataProvider()
-	       if cLayer.geometryType() == QGis.Point:
-		       # clear any previous selection
-		       cLayer.removeSelection()
-		       feat = QgsFeature()
-		       # create the select statement
-		       provider.select([],rect) 
-		       # the arguments mean no attributes returned, and do a bbox filter 
-		       #with our buffered rectangle to limit the amount of features.
-		       while provider.nextFeature(feat):
-		               # if the feat geom returned from the selection intersects 
-		               #our point then put it in a list
-		               if feat.geometry().intersects(rect):
-		                       cLayer.select(feat.id())
-		                       self.output.clear()
-		                       self.output.insert(
-		                           str(feat.geometry().asPoint().x())+','
-		                           +str(feat.geometry().asPoint().y()))
-		                       attrs = feat.attributeMap()
-		                       print attrs
-				       break
-				         # stop here so as to select one point only. 
-	       else:
-                       QtGui.QMessageBox.warning( self.iface.mainWindow(),
-                        "NetworkX Plugin Error", 
-                           "Selected node layer must be point geometry")	               
-       else:
-               QtGui.QMessageBox.information( self.iface.mainWindow(),
-                        "NetworkX Plugin Info", 
-                           "No layer currently selected in TOC" )
-                           
-       layers = qgis.utils.iface.mapCanvas().layers()
-       for layer in layers:
-         edges = str(self.ui.comboBoxInputEdges.currentText())
-         print layer.name(), edges
-         if layer.name() == edges:
-            self.canvas.setCurrentLayer(layer)
-            cLayer = self.canvas.currentLayer()
-            provider = cLayer.dataProvider()
-            # clear any previous selection
-            cLayer.removeSelection()
-            feat = QgsFeature()
-            allAttrs = provider.attributeIndexes()
-            provider.select(allAttrs)
-            fields = provider.fields() 
-            for name in fields:
-               self.ui.comboBoxInputWeight.addItem(fields[name].name())
-               print fields[name].type()
-               print fields[name].typeName()
-                  #Test for type
-            #print cLayer.fieldNames()
-	         # create the select statement
-            #provider.select([],rect) 
-	         # the arguments mean no attributes returned, and do a bbox filter 
-	         #with our buffered rectangle to limit the amount of features.
-            while provider.nextFeature(feat):
-            # if the feat geom returned from the selection intersects 
-            #our point then put it in a list
-            #if feat.geometry().intersects(rect):
-            #        cLayer.select(feat.id())
-            #        self.output.clear()
-            #        self.output.insert(
-            #            str(feat.geometry().asPoint().x())+','
-            #            +str(feat.geometry().asPoint().y()))
-               attrs = feat.attributeMap()
-               #for (key, attr) in attrs.iteritems():
-                  #print "%d: %s" % (key, attr.toString())
-               #print "attributes:",attrs
-            break
-         else:
-            QtGui.QMessageBox.information( self.iface.mainWindow(),
-                        "NetworkX Plugin Info", 
-                           "Could not find edge layer on map. Is it enabled in \
-                              layers list?" )
-
+            provider = layer.dataProvider()
+            if layer.geometryType() == QGis.Point:
+               # clear any previous selection
+               layer.removeSelection()
+               feat = QgsFeature()
+               # create the select statement
+               provider.select([],rect) 
+               # the arguments mean no attributes returned, and do a bbox filter 
+               #with our buffered rectangle to limit the amount of features.
+               while provider.nextFeature(feat):
+               # if the feat geom returned from the selection intersects 
+               #our point then put it in a list
+                   if feat.geometry().intersects(rect):
+                       layer.select(feat.id())
+                       self.output.clear()
+                       self.output.insert(
+                           str(feat.geometry().asPoint().x())+','
+                               +str(feat.geometry().asPoint().y()))
+                       #attrs = feat.attributeMap()
+                       break
+                       # stop here so as to select one point only. 
+                       
+   def outputFile(self):
+       
+       try:
+          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Output Directory"))
+          self.ui.lineEditSave.insert(self.fd)
+       except IOError as e:
+           self.ui.lineEditSave.clear()
+           QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e))
+           
+  
+   def writeNetworkShapefiles(self, network):
+       nodes = self.fd+'/nodes.*'
+       edges = self.fd+'/edges.*'
+       # test if files there
+       if glob.glob(nodes):
+           if self.ui.checkBoxOverwrite.isChecked():
+               for filename in glob.glob(nodes):
+                   os.remove(filename)
+           else:
+               raise IOError, "Node files already exist in output folder."
+       if glob.glob(edges):
+           if self.ui.checkBoxOverwrite.isChecked():
+               for filename in glob.glob(edges):
+                   os.remove(filename)
+           else:
+               raise IOError, "Edge files already exist in output folder."
+       
+       nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))       
+       
+       #else:
+       #    nx_shp.write(network, str(self.ui.lineEditSave.text()))
+       
+               
    def shortestPath(self):
       #read source/target points from gui
       source = str(self.ui.lineEditSourceNode.text())
       target = str(self.ui.lineEditTargetNode.text())
-      source = source.split(',')
-      target = target.split(',')
-
-      DG1 = nx.read_shp(str(self.linefilelist[
-                                 self.ui.comboBoxInputEdges.currentIndex()]))
-      
-      # Test for undirected network.
-      if self.ui.checkBoxUndirected.isChecked() == True:
-         print 'undirected'
-         DG1 = DG1.to_undirected()
-      #print DG1.nodes[0]
-      for node in DG1.nodes():
-      #print node[0]
-         if str(node[0]) == source[0] and str(node[1] == source[1]):
-            print 'Identified source node in network'
-            sourceNode = node
-            print sourceNode
-         if str(node[0]) == target[0] and str(node[1] == target[1]):
-            print 'Identified target node in network'
-            targetNode = node
-            print targetNode
-      #else:
-      #   print "tom"
-      #elif str(node[1]) == y:
-      #	print 
-     	#str_node = str(node)
-     	#str_node = str_node.split(', ')
-     	#print str_node[0]
-      try: 
-            key = str(self.ui.comboBoxAlgorithm.currentText())
-            #print key
-            algorithm = self.algorithms[key]
-            method = getattr(nx, algorithm)
-            p = method(DG1, sourceNode, targetNode)
-            #print DG1            
-            #method = self.algorithms[key]
-            #p = eval(nx+(self.algorithms[key])+(DG1, sourceNode, targetNode)
-            #'nx.%s(%s, %s, %s)' % (self.algorithms[keys],DG1, sourceNode, targetNode)
-            #p = nx.(DG1, sourceNode, targetNode)
-            DG2 = nx.DiGraph()
+      if source: 
+          source = source.split(',')
+          if target:
+              target = target.split(',')
+              if str(self.linefilelist[self.ui.comboBoxInputEdges.currentIndex()]) != None:
+                  DG1 = nx.read_shp(str(self.linefilelist[
+                                             self.ui.comboBoxInputEdges.currentIndex()]))
+                  
+                  # Test for undirected network.
+                  if self.ui.checkBoxUndirected.isChecked() == True:
+                     print 'undirected'
+                     DG1 = DG1.to_undirected()
+                  #print DG1.nodes[0]
+                  for node in DG1.nodes():
+                  #print node[0]
+                     if str(node[0]) == source[0] and str(node[1] == source[1]):
+                        print 'Identified source node in network'
+                        sourceNode = node
+                        print sourceNode
+                     if str(node[0]) == target[0] and str(node[1] == target[1]):
+                        print 'Identified target node in network'
+                        targetNode = node
+                        print targetNode
             
-            for i in range(0,len(p)-1):
-               DG2.add_edge(p[i],p[i+1])
-               DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
-
-            outdir = '/tmp/'
-            nx.write_shp(DG2, '/tmp/')
-            # Get created files
-            nodes = outdir+"nodes.shp"
-            edges = outdir+"edges.shp"
-            # Add to QGIS instance
-            qgis.utils.iface.addVectorLayer(edges, 
-               "Shortest Route Network Edges", "ogr")
-            qgis.utils.iface.addVectorLayer(nodes, 
-               "Shortest Route Network Nodes", "ogr")
-      except nx.NetworkXNoPath as e:
-            QtGui.QMessageBox.warning( self.iface.mainWindow(),
-                        "NetworkX Plugin Error", 
-                           "%s" % str(e))
+                  try: 
+                        key = str(self.ui.comboBoxAlgorithm.currentText())
+                        #print key
+                        algorithm = self.algorithms[key]
+                        method = getattr(nx, algorithm)
+                        weight = str(self.ui.comboBoxInputWeight.currentText()) 
+                        if weight == 'None':
+                            p = method(DG1, sourceNode, targetNode)
+                        else:
+                            p = method(DG1, sourceNode, targetNode, weight)
+                        #print DG1            
+                        #method = self.algorithms[key]
+                        #p = eval(nx+(self.algorithms[key])+(DG1, sourceNode, targetNode)
+                        #'nx.%s(%s, %s, %s)' % (self.algorithms[keys],DG1, sourceNode, targetNode)
+                        #p = nx.(DG1, sourceNode, targetNode)
+                        DG2 = nx.DiGraph()
+                        
+                        for i in range(0,len(p)-1):
+                           DG2.add_edge(p[i],p[i+1])
+                           DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
+            
+                        try:
+                            self.writeNetworkShapefiles(DG2)
+                            nodes = self.fd+'/nodes.shp'
+                            edges = self.fd+'/edges.shp'
+                            qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", "ogr")
+                            qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
+                        except IOError as e:
+                            QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e)) 
+                        #outdir = '/tmp/'
+                        #nx_shp.write_shp(DG2, '/tmp/')
+                        # Get created files
+                        #nodes = outdir+"nodes.shp"
+                        #edges = outdir+"edges.shp"
+                        # Add to QGIS instance
+                        
+                  except nx.NetworkXNoPath as e:
+                        QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                                    "NetworkX Plugin Error", 
+                                       "%s" % str(e))
+              else:
+                  QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select an edge layer")       
+          else:
+              QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a target node")
+      else:
+          QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a source node")
             
    def exit(self):
        self.close() 
