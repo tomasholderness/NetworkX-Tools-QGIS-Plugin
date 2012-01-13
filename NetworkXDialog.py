@@ -164,7 +164,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                # create the select statement
                provider.select([],rect) 
                # the arguments mean no attributes returned, and do a bbox filter 
-               #with our buffered rectangle to limit the amount of features.
+               # with our buffered rectangle to limit the amount of features.
                while provider.nextFeature(feat):
                # if the feat geom returned from the selection intersects 
                #our point then put it in a list
@@ -179,7 +179,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                        # stop here so as to select one point only. 
                        
    def outputFile(self):
-       
        try:
           self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Output Directory"))
           self.ui.lineEditSave.insert(self.fd)
@@ -189,103 +188,110 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
            
   
    def writeNetworkShapefiles(self, network):
-       nodes = self.fd+'/nodes.*'
-       edges = self.fd+'/edges.*'
-       # test if files there
-       if glob.glob(nodes):
-           if self.ui.checkBoxOverwrite.isChecked():
-               for filename in glob.glob(nodes):
-                   os.remove(filename)
-           else:
-               raise IOError, "Node files already exist in output folder."
-       if glob.glob(edges):
-           if self.ui.checkBoxOverwrite.isChecked():
-               for filename in glob.glob(edges):
-                   os.remove(filename)
-           else:
-               raise IOError, "Edge files already exist in output folder."
-       
-       nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))       
-       
+       try:
+           nodes = self.fd+'/nodes.*'
+           edges = self.fd+'/edges.*'
+           # test if files there
+           if glob.glob(nodes):
+               if self.ui.checkBoxOverwrite.isChecked():
+                   for filename in glob.glob(nodes):
+                       os.remove(filename)
+               else:
+                   raise IOError, "Node files already exist in output folder."
+           if glob.glob(edges):
+               if self.ui.checkBoxOverwrite.isChecked():
+                   for filename in glob.glob(edges):
+                       os.remove(filename)
+               else:
+                   raise IOError, "Edge files already exist in output folder."
+           
+           nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))   
+       except AttributeError:
+           raise AttributeError, "No output file specified."
+           # raise last to pass to next method (shortestPath)
+               
+           
+           
+       #except AttributeError:
+       #    QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error","Please specify output file.")
        #else:
        #    nx_shp.write(network, str(self.ui.lineEditSave.text()))
        
                
    def shortestPath(self):
-      #read source/target points from gui
-      source = str(self.ui.lineEditSourceNode.text())
-      target = str(self.ui.lineEditTargetNode.text())
-      if source: 
-          source = source.split(',')
-          if target:
-              target = target.split(',')
-              if str(self.linefilelist[self.ui.comboBoxInputEdges.currentIndex()]) != None:
-                  DG1 = nx.read_shp(str(self.linefilelist[
-                                             self.ui.comboBoxInputEdges.currentIndex()]))
-                  
-                  # Test for undirected network.
-                  if self.ui.checkBoxUndirected.isChecked() == True:
-                     print 'undirected'
-                     DG1 = DG1.to_undirected()
-                  #print DG1.nodes[0]
-                  for node in DG1.nodes():
-                  #print node[0]
-                     if str(node[0]) == source[0] and str(node[1] == source[1]):
-                        print 'Identified source node in network'
-                        sourceNode = node
-                        print sourceNode
-                     if str(node[0]) == target[0] and str(node[1] == target[1]):
-                        print 'Identified target node in network'
-                        targetNode = node
-                        print targetNode
-            
-                  try: 
-                        key = str(self.ui.comboBoxAlgorithm.currentText())
-                        #print key
-                        algorithm = self.algorithms[key]
-                        method = getattr(nx, algorithm)
-                        weight = str(self.ui.comboBoxInputWeight.currentText()) 
-                        if weight == 'None':
-                            p = method(DG1, sourceNode, targetNode)
-                        else:
-                            p = method(DG1, sourceNode, targetNode, weight)
-                        #print DG1            
-                        #method = self.algorithms[key]
-                        #p = eval(nx+(self.algorithms[key])+(DG1, sourceNode, targetNode)
-                        #'nx.%s(%s, %s, %s)' % (self.algorithms[keys],DG1, sourceNode, targetNode)
-                        #p = nx.(DG1, sourceNode, targetNode)
-                        DG2 = nx.DiGraph()
+      try: 
+          #read source/target points from gui
+          source = str(self.ui.lineEditSourceNode.text())
+          target = str(self.ui.lineEditTargetNode.text())
+          if source: 
+              source = source.split(',')
+              if target:
+                  target = target.split(',')
+                  if str(self.linefilelist[self.ui.comboBoxInputEdges.currentIndex()]) != None:
+                      DG1 = nx.read_shp(str(self.linefilelist[
+                                                 self.ui.comboBoxInputEdges.currentIndex()]))
+                      
+                      # Test for undirected network.
+                      if self.ui.checkBoxUndirected.isChecked() == True:
+                         print 'undirected'
+                         DG1 = DG1.to_undirected()
+                      #print DG1.nodes[0]
+                      #sourceNode, targetNode = None
+                      for node in DG1.nodes():
+                      #print node[0]
+                         if str(node[0]) == source[0] and str(node[1] == source[1]):
+                            print 'Identified source node in network'
+                            sourceNode = node
+                            print sourceNode
+                         elif str(node[0]) == target[0] and str(node[1] == target[1]):
+                            print 'Identified target node in network'
+                            targetNode = node
+                            print targetNode 
+                      try: 
+                            targetNode
+                      except NameError:
+                            raise UnboundLocalError, "Specified target node not found in edge layer."
+                              #QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Specified target node not found in edge layer.")
+                      try: 
+                            sourceNode
+                      except NameError:
+                              raise UnboundLocalError, "Specified source node not found in edge layer."                        
+                              #QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Specified source node not found in edge layer.")
+                              
+                              
+   
+                         
+                              
+                      key = str(self.ui.comboBoxAlgorithm.currentText())
+                      #print key
+                      algorithm = self.algorithms[key]
+                      method = getattr(nx, algorithm)
+                      weight = str(self.ui.comboBoxInputWeight.currentText()) 
+                      if weight == 'None':
+                        p = method(DG1, sourceNode, targetNode)
+                      else:
+                        p = method(DG1, sourceNode, targetNode, weight)
+                      DG2 = nx.DiGraph()
+                      for i in range(0,len(p)-1):
+                       DG2.add_edge(p[i],p[i+1])
+                       DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
+                      self.writeNetworkShapefiles(DG2)
+                      nodes = self.fd+'/nodes.shp'
+                      edges = self.fd+'/edges.shp'
+                      qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", "ogr")
+                      qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
                         
-                        for i in range(0,len(p)-1):
-                           DG2.add_edge(p[i],p[i+1])
-                           DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
-            
-                        try:
-                            self.writeNetworkShapefiles(DG2)
-                            nodes = self.fd+'/nodes.shp'
-                            edges = self.fd+'/edges.shp'
-                            qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", "ogr")
-                            qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
-                        except IOError as e:
-                            QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e)) 
-                        #outdir = '/tmp/'
-                        #nx_shp.write_shp(DG2, '/tmp/')
-                        # Get created files
-                        #nodes = outdir+"nodes.shp"
-                        #edges = outdir+"edges.shp"
-                        # Add to QGIS instance
-                        
-                  except nx.NetworkXNoPath as e:
-                        QtGui.QMessageBox.warning( self.iface.mainWindow(),
-                                    "NetworkX Plugin Error", 
-                                       "%s" % str(e))
+                  else:
+                      QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select an edge layer")       
               else:
-                  QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select an edge layer")       
+                  QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a target node")
           else:
-              QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a target node")
-      else:
-          QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a source node")
-            
+              QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a source node")
+              
+      except (IOError, AttributeError,UnboundLocalError,  nx.NetworkXNoPath) as e:
+          QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                                    "NetworkX Plugin Error", 
+                                       "%s" % str(e))      
    def exit(self):
        self.close() 
       
