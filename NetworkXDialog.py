@@ -12,11 +12,6 @@ license		         : Relseased under Simplified BSD license (see LICENSE.txt)
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 
-# Change log
-# 07-01-2012 - TH - Updated header metadata.
-# 07-01-2012 - TH - Made inital commit to local git repo on 478.
-# 07-01-2012 - TH - Moved check for NetworkX module to NetworkX.initGui
-
 import sys
 import os
 import glob
@@ -28,15 +23,13 @@ from qgis.core import *
 import qgis.utils
 from qgis.core import QgsMapLayerRegistry
 
-from PyQt4 import QtCore, QtGui, uic
-
+from PyQt4 import QtCore, QtGui
 
 from Ui_NetworkX_path_dock import Ui_NetworkXPath
 from Ui_NetworkX_build import Ui_NetworkXBuild
 
 # Checked for networkx module in NetworkX.initGui so can safely import here.
 import networkx as nx
-
 import nx_shp 
 
 class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
@@ -47,16 +40,25 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       
       
       self.ui = Ui_NetworkXPath()
-      #print type(self.ui)
-      #self.ui = uic.loadUi('/home/a5245228/bin/python/IAM/network/networkx_qgis/NetworkX/Ui_NetworkX_path.ui')
-      #print type(self.ui)
-      #self.iface.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.ui)
       self.ui.setupUi(self)
+      self.loadMenus()
+      
       
       # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
-
+      
+      QtCore.QObject.connect(self.ui.comboBoxInputEdges, QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
+      QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("pressed()"),
+         self.sourcePoint)
+      QtCore.QObject.connect(self.ui.btnTargetNode, QtCore.SIGNAL("clicked()"),
+         self.targetPoint)
+      QtCore.QObject.connect(self.ui.btnOK, QtCore.SIGNAL("clicked()"),
+         self.shortestPath)
+      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
+      QtCore.QObject.connect(self.ui.btnReload, QtCore.SIGNAL("clicked()"),self.clearReload)
+   
+   def loadMenus(self):   
       # List available algorithms
       self.algorithms = {'Shortest Path':'shortest_path','Dijkstra':'dijkstra_path','A*':'astar_path'}
       print self.algorithms
@@ -91,16 +93,17 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       # Updated comboBoxEdges internally so updated weights.
       self.attributeWeights()
       
-      QtCore.QObject.connect(self.ui.comboBoxInputEdges, QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
-      QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("pressed()"),
-         self.sourcePoint)
-      QtCore.QObject.connect(self.ui.btnTargetNode, QtCore.SIGNAL("clicked()"),
-         self.targetPoint)
-      QtCore.QObject.connect(self.ui.btnOK, QtCore.SIGNAL("clicked()"),
-         self.shortestPath)
-      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
+   def clearInputs(self):
+       self.ui.checkBoxUndirected.setChecked(False)
+       self.ui.checkBoxOverwrite.setChecked(False)
+       self.ui.lineEditSourceNode.clear()
+       self.ui.lineEditTargetNode.clear()
+       self.ui.lineEditSave.clear()
+       
+   def clearReload(self):
+       self.clearInputs()
+       self.loadMenus()
       
-
    def attributeWeights(self):
       # Clear the attributeComboBoxList
       self.ui.comboBoxInputWeight.clear()
@@ -174,7 +177,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                        self.output.insert(
                            str(feat.geometry().asPoint().x())+','
                                +str(feat.geometry().asPoint().y()))
-                       #attrs = feat.attributeMap()
                        break
                        # stop here so as to select one point only. 
                        
@@ -209,14 +211,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
        except AttributeError:
            raise AttributeError, "No output file specified."
            # raise last to pass to next method (shortestPath)
-               
-           
-           
-       #except AttributeError:
-       #    QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error","Please specify output file.")
-       #else:
-       #    nx_shp.write(network, str(self.ui.lineEditSave.text()))
-       
                
    def shortestPath(self):
       try: 
@@ -256,11 +250,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
                             sourceNode
                       except NameError:
                               raise UnboundLocalError, "Specified source node not found in edge layer."                        
-                              #QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Specified source node not found in edge layer.")
-                              
-                              
-   
-                         
                               
                       key = str(self.ui.comboBoxAlgorithm.currentText())
                       #print key
@@ -301,74 +290,79 @@ class NetworkXDialogBuild(QtGui.QDialog):
       # Set up the user interface from Designer. 
       self.ui = Ui_NetworkXBuild()
       self.ui.setupUi(self)
-
-      ##sys.stdout = qgis.console.QgisOutputCatcher()
-      ##sys.stdout.write('testing 1...\r')
+      self.iface = qgis.utils.iface
 
       # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL(
          "clicked()"),self.exit)
-
+      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
+      
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])
       self.layermap = QgsMapLayerRegistry.instance().mapLayers()
       # Loop through loaded QGIS layers 
-      for (name, layer) in self.layermap.iteritems():
+      for (key, layer) in self.layermap.iteritems():
          # Check layer type is vector
-         if layer.type() == 0:         
+         if layer.type() == 0:
+            #Check layer is from shapefile
+            if str(layer.source()).endswith('.shp'):
             # Add to comboBox and filelist
-            self.ui.comboBoxInput.addItem(name)
-            self.filelist.append(layer.source())
-            self.ui.comboBoxInput.setCurrentIndex(1)
-
-      
+                   self.filelist.append(layer.source())
+                   self.ui.comboBoxInput.addItem(layer.name())
+                   self.ui.comboBoxInput.setCurrentIndex(1)
 
       # Accept button "OK" press      
       QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),
          self.buildNetwork)
-      	
-   def buildNetwork(self):
-       # Method to build network files
-       ##sys.stdout = qgis.console.QgisOutputCatcher()
-       ##sys.stdout.write('testing 2...\r')	
-       # Check that destination exists
-       outdir = str(self.ui.lineEdit.text())
-       print type(outdir)
-       if outdir == None:
-         pass
-       else:
          
-         # Build directed network from loaded shapefile
-         print self.ui.comboBoxInput.currentIndex()
-         print type(self.filelist[1])
-         #global DG1
-         DG1 = nx.read_shp(str(self.filelist[
-                                 self.ui.comboBoxInput.currentIndex()]))
-         #print DG1.edges() 
-         # Write out directed network to nodes and edges shapefiles using NX
-         print outdir
-	 print DG1.nodes()
-         nx_shp.write_shp(DG1, outdir)
-         
-         # Get created files
-         nodes = outdir+"nodes.shp"
-         edges = outdir+"edges.shp"
-         # Add to QGIS instance
-         qgis.utils.iface.addVectorLayer(edges, "Network Edges", "ogr")
-         qgis.utils.iface.addVectorLayer(nodes, "Network Nodes", "ogr")
-         
-         self.close()
-         # get current item from comboBoxInput
-         # get filename from dictionary above
-         # do nx.read_shp(fname).
-         # write to new shapes
-         # add to qgis.       
-	
+   def outputFile(self):
+       try:
+          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Output Directory"))
+          self.ui.lineEditSave.insert(self.fd)
+       except IOError as e:
+           self.ui.lineEditSave.clear()
+           QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e))         
 
-      #print fname
-      #DG1 = nx.read_shp(
-   
+   def writeNetworkShapefiles(self, network):
+       try:
+           nodes = self.fd+'/nodes.*'
+           edges = self.fd+'/edges.*'
+           # test if network shapefiles already exist in target dir.
+           if glob.glob(nodes):
+               if self.ui.checkBoxOverwrite.isChecked():
+                   for filename in glob.glob(nodes):
+                       os.remove(filename)
+               else:
+                   raise IOError, "Node files already exist in output folder."
+           if glob.glob(edges):
+               if self.ui.checkBoxOverwrite.isChecked():
+                   for filename in glob.glob(edges):
+                       os.remove(filename)
+               else:
+                   raise IOError, "Edge files already exist in output folder."
+           
+           nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))   
+       except AttributeError:
+           raise AttributeError, "No output file specified."
+
+   def buildNetwork(self):
+         try:
+             DG1 = nx.read_shp(str(self.filelist[
+                                 self.ui.comboBoxInput.currentIndex()]))
+             self.writeNetworkShapefiles(DG1)                        
+             if self.ui.checkBoxAdd.isChecked():
+                 # Get created files
+                 nodes = self.fd+"/nodes.shp"
+                 edges = self.fd+"/edges.shp"
+                 # Add to QGIS instance
+                 qgis.utils.iface.addVectorLayer(edges, "Network Edges", "ogr")
+                 qgis.utils.iface.addVectorLayer(nodes, "Network Nodes", "ogr")
+             
+             self.close()
+         except (AttributeError, IOError) as e:
+               
+               QtGui.QMessageBox.warning( self, "NetworkX Plugin Error", "%s" % e)
    def exit(self):
        self.close()   
       
