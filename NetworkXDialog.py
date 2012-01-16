@@ -12,19 +12,12 @@ license		 : Relseased under Simplified BSD license (see LICENSE.txt)
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 
-#import sys
 import os
 import glob
-#from decimal import Decimal
-
 import qgis
-from qgis.gui import *
-from qgis.core import *
-import qgis.utils
-from qgis.core import QgsMapLayerRegistry
-
+from qgis.gui import QgsMapToolEmitPoint
+from qgis.core import QgsGeometry, QGis, QgsFeature, QgsMapLayerRegistry
 from PyQt4 import QtCore, QtGui
-
 from Ui_NetworkX_path_dock import Ui_NetworkXPath
 from Ui_NetworkX_build import Ui_NetworkXBuild
 
@@ -84,7 +77,8 @@ class WriteNetworkShapefiles:
        nx_shp.write_shp(network, fileDir)   
 
 
-class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo):
+class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, 
+                         ShapeLayersToCombo):
    def __init__(self, parent):
       QtGui.QDockWidget.__init__(self, parent.iface.mainWindow()) 
       self.iface = qgis.utils.iface
@@ -98,20 +92,24 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
       self.selectedNodes = {'source':None, 'target':None}
       
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
-         self.exit)
-      QtCore.QObject.connect(self.ui.comboBoxInputEdges, QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
-      QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("pressed()"),
-         self.sourcePoint)
+                             self.exit)
+      QtCore.QObject.connect(self.ui.comboBoxInputEdges, 
+        QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
+      QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("clicked()"),
+                             self.sourcePoint)
       QtCore.QObject.connect(self.ui.btnTargetNode, QtCore.SIGNAL("clicked()"),
-         self.targetPoint)
+                             self.targetPoint)
       QtCore.QObject.connect(self.ui.btnOK, QtCore.SIGNAL("clicked()"),
-         self.shortestPath)
-      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
-      QtCore.QObject.connect(self.ui.btnReload, QtCore.SIGNAL("clicked()"),self.clearReload)
+                             self.shortestPath)
+      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),
+                             self.outputFile)
+      QtCore.QObject.connect(self.ui.btnReload, QtCore.SIGNAL("clicked()"),
+                             self.clearReload)
    
    def loadMenus(self):   
       # List available algorithms
-      self.algorithms = {'Shortest Path':'shortest_path','Dijkstra':'dijkstra_path','A*':'astar_path'}
+      self.algorithms = {'Shortest Path':'shortest_path',
+                         'Dijkstra':'dijkstra_path','A*':'astar_path'}
       print self.algorithms
       for key in self.algorithms:
          self.ui.comboBoxAlgorithm.addItem(key)
@@ -166,8 +164,10 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
               try:
                   fields = provider.fields() 
                   for name in fields:
-                      if fields[name].typeName() == 'Integer' or fields[name].typeName() == 'Real':
-                              self.ui.comboBoxInputWeight.addItem(fields[name].name())
+                      if (fields[name].typeName() == 'Integer' or 
+                          fields[name].typeName() == 'Real'):
+                              self.ui.comboBoxInputWeight.addItem(
+                                  fields[name].name())
                               self.ui.comboBoxInputWeight.setCurrentIndex(0)
               except TypeError:
                    self.ui.comboBoxInputWeight.setCurrentIndex(0)
@@ -220,6 +220,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                # if the feat geom returned from the selection intersects 
                 #our point then put it in a list for selection
                    if feat.geometry().intersects(rect):
+                       #layer.removeSelection(self.selectedNodes[self.nodetype])
                        self.selectedNodes[self.nodetype] = feat.id()
                        self.output.clear()
                        self.output.insert(
@@ -233,13 +234,15 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                        
    def outputFile(self):
        try:
-          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Output Directory"))
+          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, 
+                                                    "Select Output Directory"))
           self.ui.lineEditSave.insert(self.fd)
        except IOError as e:
            self.ui.lineEditSave.clear()
-           QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e))
+           QtGui.QMessageBox.warning( self.iface.mainWindow(), 
+                                     "NetworkX Plugin Error", "%s" % str(e))
            
-  
+   '''
    def writeNetworkShapefiles(self, network):
        try:
            nodes = self.fd+'/nodes.*'
@@ -262,72 +265,75 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
        except AttributeError:
            raise AttributeError, "No output file specified."
            # raise last to pass to next method (shortestPath)
-               
+   '''            
    def shortestPath(self):
       try: 
           #read source/target points from gui
           source = str(self.ui.lineEditSourceNode.text())
           target = str(self.ui.lineEditTargetNode.text())
-          if source: 
-              source = source.split(',')
-              if target:
-                  target = target.split(',')
-                  if str(self.linefilelist[self.ui.comboBoxInputEdges.currentIndex()]) != None:
-                      DG1 = nx.read_shp(str(self.linefilelist[
-                                                 self.ui.comboBoxInputEdges.currentIndex()]))
+          if source == '':
+              raise IOError, "Please specify source node."
+          source = source.split(',')
+          if target == '':
+              raise IOError, "Please specify target node."
+          target = target.split(',')
+
+          edges = str(self.linefilelist[
+                          self.ui.comboBoxInputEdges.currentIndex()])
+          if edges == "Shapefile line layers:":
+                  raise IOError, "Please specify input edge layer."
+
+          DG1 = nx.read_shp(str(self.linefilelist[
+                  self.ui.comboBoxInputEdges.currentIndex()]))
+          
+          if self.ui.checkBoxUndirected.isChecked() == True:
+             DG1 = DG1.to_undirected()
+             
+          for node in DG1.nodes():
+             if str(node[0]) == source[0] and str(node[1] == source[1]):
+                sourceNode = node
+             elif str(node[0]) == target[0] and str(node[1] == target[1]):
+                targetNode = node
+             try: 
+                    targetNode
+             except NameError:
+                raise (UnboundLocalError,
+                           "Specified target node not found in edge layer.")
+             try: 
+                sourceNode
+             except NameError:
+                raise (UnboundLocalError,
+                       "Specified source node not found in edge layer.")    
                       
-                      if self.ui.checkBoxUndirected.isChecked() == True:
-                         print 'undirected'
-                         DG1 = DG1.to_undirected()
-                      for node in DG1.nodes():
-                         if str(node[0]) == source[0] and str(node[1] == source[1]):
-                            print 'Identified source node in network'
-                            sourceNode = node
-                            print sourceNode
-                         elif str(node[0]) == target[0] and str(node[1] == target[1]):
-                            print 'Identified target node in network'
-                            targetNode = node
-                            print targetNode 
-                      try: 
-                            targetNode
-                      except NameError:
-                            raise UnboundLocalError, "Specified target node not found in edge layer."
-                      try: 
-                            sourceNode
-                      except NameError:
-                              raise UnboundLocalError, "Specified source node not found in edge layer."                        
-                              
-                      key = str(self.ui.comboBoxAlgorithm.currentText())
-                      #print key
-                      algorithm = self.algorithms[key]
-                      method = getattr(nx, algorithm)
-                      weight = str(self.ui.comboBoxInputWeight.currentText()) 
-                      if weight == 'None':
-                        p = method(DG1, sourceNode, targetNode)
-                      else:
-                        p = method(DG1, sourceNode, targetNode, weight)
-                      DG2 = nx.DiGraph()
-                      for i in range(0,len(p)-1):
-                       DG2.add_edge(p[i],p[i+1])
-                       DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
-                      self.writeNetworkShapefiles(DG2)
-                      nodes = self.fd+'/nodes.shp'
-                      edges = self.fd+'/edges.shp'
-                      qgis.utils.iface.addVectorLayer(edges, "Shortest Route Network Edges", "ogr")
-                      qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
-                        
-                  else:
-                      QtGui.QMessageBox.information( self.iface.mainWindow(), 
-                        "NetworkX Plugin Information", 
-                        "Please select an edge layer")       
-              else:
-                  QtGui.QMessageBox.information( self.iface.mainWindow(), 
-                    "NetworkX Plugin Information", 
-                    "Please select a target node")
-          else:
-              QtGui.QMessageBox.information( self.iface.mainWindow(), 
-                "NetworkX Plugin Information", 
-                "Please select a source node")
+             key = str(self.ui.comboBoxAlgorithm.currentText())
+             algorithm = self.algorithms[key]
+             method = getattr(nx, algorithm)
+              
+             weight = str(self.ui.comboBoxInputWeight.currentText()) 
+             if weight == 'None':
+                 p = method(DG1, sourceNode, targetNode)
+             else:
+                 p = method(DG1, sourceNode, targetNode, weight)
+             DG2 = nx.DiGraph()
+             for i in range(0,len(p)-1):
+                 DG2.add_edge(p[i],p[i+1])
+                 DG2.edge[p[i]][p[i+1]]['Wkt'] = DG1.edge[p[i]][p[i+1]]['Wkt']
+               
+             if self.ui.lineEditSave == '':
+                 raise IOError, "No output directory specified." 
+              
+             if self.ui.checkBoxOverwrite.isChecked():
+                 WriteNetworkShapefiles(DG2, self.fd, overwrite=True)
+             else:
+                 WriteNetworkShapefiles(DG2, self.fd)
+            
+             nodes = self.fd+'/nodes.shp'
+             edges = self.fd+'/edges.shp'
+             qgis.utils.iface.addVectorLayer(edges, 
+                                        "Shortest Route Network Edges", "ogr")
+             qgis.utils.iface.addVectorLayer(nodes, 
+                                        "Shortest Route Network Nodes", "ogr")
+  
               
       except (IOError, AttributeError, UnboundLocalError, 
                   nx.NetworkXNoPath) as e:
@@ -336,7 +342,8 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
    def exit(self):
        self.close() 
       
-class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo, WriteNetworkShapefiles):
+class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo, 
+                          WriteNetworkShapefiles):
    def __init__(self):
       QtGui.QDialog.__init__(self) 
       
@@ -358,19 +365,21 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo, WriteNetworkShapefi
          
    def outputFile(self):
        try:
-          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Output Directory"))
+          self.fd = str(QtGui.QFileDialog.getExistingDirectory(self, 
+                                                    "Select Output Directory"))
           self.ui.lineEditSave.insert(self.fd)
        except IOError as e:
            self.ui.lineEditSave.clear()
-           QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e))         
+           QtGui.QMessageBox.warning( self.iface.mainWindow(), 
+                                     "NetworkX Plugin Error", "%s" % str(e))         
 
    def buildNetwork(self):
          try:
-             if str(self.filelist[self.ui.comboBoxInput.currentIndex()]) == "Available layers:":
+             layer = str(self.filelist[self.ui.comboBoxInput.currentIndex()])
+             if layer == "Available layers:":
                      raise IOError, "Please specify input shapefile layer."
                  
-             DG1 = nx.read_shp(str(self.filelist[
-                                 self.ui.comboBoxInput.currentIndex()]))
+             DG1 = nx.read_shp(layer)
              if str(self.ui.lineEditSave.text()) == '':
                  raise IOError, "No output directory specified."
                  
@@ -386,7 +395,7 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo, WriteNetworkShapefi
              
              self.close()
          except (AttributeError, IOError) as e:
-               QtGui.QMessageBox.warning( self, "NetworkX Plugin Error", "%s" % e)
+               QtGui.QMessageBox.warning( self, "NetworkX Plugin Error", 
+                                             "%s" % e)
    def exit(self):
-       self.close()   
-      
+       self.close()
