@@ -14,46 +14,44 @@ __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 __version__ = "0.1"
 
 # Import the PyQt and QGIS libraries
-#from PyQt4.QtCore import * 
-#from PyQt4.QtGui import *
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-#from PyQt4.QtCore import * 
-from qgis.core import *
-# Initialize Qt resources from file resources.py
 # Import the code for the dialog
-#from NetworkXDialog import NetworkXDialog
 from NetworkXDialog import NetworkXDialogPath
 from NetworkXDialog import NetworkXDialogBuild
+# Initialize Qt resources from file resources.py
 import resources
 NAME = "NetworkX Tools"
 
 class NetworkX: 
-
     def __init__(self, iface):
         # Save reference to the QGIS interface
         self.iface = iface
-  
-    
+        
     def initGui(self):
         try:
             import networkx
         except ImportError:
-            QMessageBox.critical(self.iface.mainWindow(),"NetworkX Plugin Error", "NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
-        #raise ImportError("NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/") 
+            QtGui.QMessageBox.critical(self.iface.mainWindow(),
+"NetworkX Plugin Error", 
+"NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
         
         # Create action that will start plugin configuration    
-        self.actionBuild = QtGui.QAction(QtGui.QIcon(":/plugins/NetworkX/icon/plugin.png"),"Build Network",
+        self.actionBuild = QtGui.QAction(QtGui.QIcon(
+        ":/plugins/NetworkX/icon/plugin.png"),"Build Network",
                                     self.iface.mainWindow())
-        self.actionPath = QtGui.QAction(QtGui.QIcon(":/plugins/NetworkX/icon/plugin.png"),"Shortest Path",
+        self.actionPath = QtGui.QAction(QtGui.QIcon(
+        ":/plugins/NetworkX/icon/plugin.png"),"Shortest Path",
                                     self.iface.mainWindow())
         # connect the action to the run method
-        QtCore.QObject.connect(self.actionBuild, QtCore.SIGNAL("triggered()"), self.runBuild)
-        QtCore.QObject.connect(self.actionPath, QtCore.SIGNAL("triggered()"), self.runPath)
+        
+        QtCore.QObject.connect(self.actionBuild, QtCore.SIGNAL(
+                                                "triggered()"), self.runBuild)
+        QtCore.QObject.connect(self.actionPath, QtCore.SIGNAL(
+                                                "triggered()"), self.runPath)
       
         self.iface.addPluginToMenu("&NetworkX Tools", self.actionBuild)
         self.iface.addPluginToMenu("&NetworkX Tools", self.actionPath)
-  
 
     def unload(self):
         # Remove the plugin menu item and icon
@@ -71,4 +69,5 @@ class NetworkX:
     def runPath(self): 
         # create and show the dialog
         self.dock_window = NetworkXDialogPath(self)
-        self.iface.mainWindow().addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dock_window)
+        self.iface.mainWindow().addDockWidget(QtCore.Qt.RightDockWidgetArea, 
+                                                self.dock_window)
