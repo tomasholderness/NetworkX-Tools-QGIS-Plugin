@@ -1,12 +1,12 @@
 """
 /******************************************************************************
-Name		            : NetworkX Tools
+Name		 : NetworkX Tools
 Description          : Perform network analysis using the NetworkX package 
 Date                 : 03/01/2012
 copyright            : (C) 2012 Tom Holderness & Newcastle University
 contact              : http://www.students.ncl.ac.uk/tom.holderness
-email		            : tom.holderness@ncl.ac.uk 
-license		         : Relseased under Simplified BSD license (see LICENSE.txt)
+email		 : tom.holderness@ncl.ac.uk 
+license		 : Relseased under Simplified BSD license (see LICENSE.txt)
 ******************************************************************************/
 """
 
@@ -35,7 +35,7 @@ import nx_shp
 class ShapeLayersToCombo:
     '''Abstract class to support loading of layers from QGIS TOC to Qt combo
     box.'''
-    def __init__(self, comboLayers, filelist, geomtype):
+    def __init__(self, comboLayers, filelist, geomtype=None):
         '''Method to add current shapefile layers to QT combo box, takes 
         comboBox ui reference and file list and adds suitable TOC layers to 
         both.
@@ -48,30 +48,33 @@ class ShapeLayersToCombo:
             # Check layer is from shapefile
             if str(layer.source()).endswith('.shp'):
             # Check layer is correct geom
-                if layer.geometryType() == geomtype:
-                    # Add to comboBox and filelist
-                       comboLayers.addItem(layer.name())
-                       comboLayers.setCurrentIndex(1)
-                       filelist.append(layer.source())
+                if geomtype is None:
+                        # Add to comboBox and filelist
+                        comboLayers.addItem(layer.name())
+                        comboLayers.setCurrentIndex(1)
+                        filelist.append(layer.source())
+                else:
+                    if layer.geometryType() == geomtype:
+                        # Add to comboBox and filelist
+                        comboLayers.addItem(layer.name())
+                        comboLayers.setCurrentIndex(1)
+                        filelist.append(layer.source())
          else:  
              comboLayers.setCurrentIndex(0)
+             
+
 
 class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo):
    def __init__(self, parent):
       QtGui.QDockWidget.__init__(self, parent.iface.mainWindow()) 
       self.iface = qgis.utils.iface
       # Set up the user interface from Designer. 
-      
-      
       self.ui = Ui_NetworkXPath()
       self.ui.setupUi(self)
       self.loadMenus()
       
-      
-      # Cancel button closes
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
-      
       QtCore.QObject.connect(self.ui.comboBoxInputEdges, QtCore.SIGNAL("activated(const QString&)"), self.attributeWeights)
       QtCore.QObject.connect(self.ui.btnSourceNode, QtCore.SIGNAL("pressed()"),
          self.sourcePoint)
@@ -89,14 +92,12 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
       for key in self.algorithms:
          self.ui.comboBoxAlgorithm.addItem(key)
       self.ui.comboBoxAlgorithm.setCurrentIndex(0)
-      #LayersCombo(self.ui.comboBoxInputEdges filelist)
       # Add available layers to the input combo box.
       self.pointfilelist = ["Shapefile point layers:"]
       self.linefilelist = ["Shapefile line layers:"]            
       self.ui.comboBoxInputNodes.addItem(self.pointfilelist[0])
       self.ui.comboBoxInputEdges.addItem(self.linefilelist[0])
       self.layermap = QgsMapLayerRegistry.instance().mapLayers()
-      # Loop through loaded QGIS layers 
       ShapeLayersToCombo(self.ui.comboBoxInputNodes, self.pointfilelist, 0)
       ShapeLayersToCombo(self.ui.comboBoxInputEdges, self.linefilelist, 1)
 
@@ -247,14 +248,10 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                       DG1 = nx.read_shp(str(self.linefilelist[
                                                  self.ui.comboBoxInputEdges.currentIndex()]))
                       
-                      # Test for undirected network.
                       if self.ui.checkBoxUndirected.isChecked() == True:
                          print 'undirected'
                          DG1 = DG1.to_undirected()
-                      #print DG1.nodes[0]
-                      #sourceNode, targetNode = None
                       for node in DG1.nodes():
-                      #print node[0]
                          if str(node[0]) == source[0] and str(node[1] == source[1]):
                             print 'Identified source node in network'
                             sourceNode = node
@@ -267,7 +264,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                             targetNode
                       except NameError:
                             raise UnboundLocalError, "Specified target node not found in edge layer."
-                              #QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Specified target node not found in edge layer.")
                       try: 
                             sourceNode
                       except NameError:
@@ -293,50 +289,44 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                       qgis.utils.iface.addVectorLayer(nodes, "Shortest Route Network Nodes", "ogr")
                         
                   else:
-                      QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select an edge layer")       
+                      QtGui.QMessageBox.information( self.iface.mainWindow(), 
+                        "NetworkX Plugin Information", 
+                        "Please select an edge layer")       
               else:
-                  QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a target node")
+                  QtGui.QMessageBox.information( self.iface.mainWindow(), 
+                    "NetworkX Plugin Information", 
+                    "Please select a target node")
           else:
-              QtGui.QMessageBox.information( self.iface.mainWindow(), "NetworkX Plugin Information", "Please select a source node")
+              QtGui.QMessageBox.information( self.iface.mainWindow(), 
+                "NetworkX Plugin Information", 
+                "Please select a source node")
               
-      except (IOError, AttributeError,UnboundLocalError,  nx.NetworkXNoPath) as e:
-          QtGui.QMessageBox.warning( self.iface.mainWindow(),
-                                    "NetworkX Plugin Error", 
-                                       "%s" % str(e))      
+      except (IOError, AttributeError, UnboundLocalError, 
+                  nx.NetworkXNoPath) as e:
+                      QtGui.QMessageBox.warning( self.iface.mainWindow(),
+                                    "NetworkX Plugin Error", "%s" % str(e))      
    def exit(self):
        self.close() 
       
-class NetworkXDialogBuild(QtGui.QDialog):
+class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo):
    def __init__(self):
       QtGui.QDialog.__init__(self) 
-      # Set up the user interface from Designer. 
+      
       self.ui = Ui_NetworkXBuild()
       self.ui.setupUi(self)
       self.iface = qgis.utils.iface
 
-      # Cancel button closes
+      QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),
+         self.buildNetwork)
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL(
          "clicked()"),self.exit)
-      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL("clicked()"),self.outputFile)
-      
+      QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL(
+          "clicked()"),self.outputFile)
+          
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])
-      self.layermap = QgsMapLayerRegistry.instance().mapLayers()
-      # Loop through loaded QGIS layers 
-      for (key, layer) in self.layermap.iteritems():
-         # Check layer type is vector
-         if layer.type() == 0:
-            #Check layer is from shapefile
-            if str(layer.source()).endswith('.shp'):
-            # Add to comboBox and filelist
-                   self.filelist.append(layer.source())
-                   self.ui.comboBoxInput.addItem(layer.name())
-                   self.ui.comboBoxInput.setCurrentIndex(1)
-
-      # Accept button "OK" press      
-      QtCore.QObject.connect(self.ui.btnOK,QtCore.SIGNAL("clicked()"),
-         self.buildNetwork)
+      ShapeLayersToCombo(self.ui.comboBoxInput, self.filelist)
          
    def outputFile(self):
        try:
