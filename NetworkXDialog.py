@@ -32,7 +32,31 @@ from Ui_NetworkX_build import Ui_NetworkXBuild
 import networkx as nx
 import nx_shp 
 
-class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
+class ShapeLayersToCombo:
+    '''Abstract class to support loading of layers from QGIS TOC to Qt combo
+    box.'''
+    def __init__(self, comboLayers, filelist, geomtype):
+        '''Method to add current shapefile layers to QT combo box, takes 
+        comboBox ui reference and file list and adds suitable TOC layers to 
+        both.
+        '''
+        layermap = QgsMapLayerRegistry.instance().mapLayers()
+        # Loop through loaded QGIS layers 
+        for (key, layer) in layermap.iteritems():
+         # Check layer type is vector
+         if layer.type() == 0:
+            # Check layer is from shapefile
+            if str(layer.source()).endswith('.shp'):
+            # Check layer is correct geom
+                if layer.geometryType() == geomtype:
+                    # Add to comboBox and filelist
+                       comboLayers.addItem(layer.name())
+                       comboLayers.setCurrentIndex(1)
+                       filelist.append(layer.source())
+         else:  
+             comboLayers.setCurrentIndex(0)
+
+class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo):
    def __init__(self, parent):
       QtGui.QDockWidget.__init__(self, parent.iface.mainWindow()) 
       self.iface = qgis.utils.iface
@@ -65,7 +89,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       for key in self.algorithms:
          self.ui.comboBoxAlgorithm.addItem(key)
       self.ui.comboBoxAlgorithm.setCurrentIndex(0)
-
+      #LayersCombo(self.ui.comboBoxInputEdges filelist)
       # Add available layers to the input combo box.
       self.pointfilelist = ["Shapefile point layers:"]
       self.linefilelist = ["Shapefile line layers:"]            
@@ -73,36 +97,34 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath):
       self.ui.comboBoxInputEdges.addItem(self.linefilelist[0])
       self.layermap = QgsMapLayerRegistry.instance().mapLayers()
       # Loop through loaded QGIS layers 
-      for (key, layer) in self.layermap.iteritems():
-         # Check layer type is vector
-         if layer.type() == 0:
-            #Check layer is from shapefile
-            if str(layer.source()).endswith('.shp'):
-            # Add to comboBox and filelist
-                if layer.geometryType() == 0:
-                   self.ui.comboBoxInputNodes.addItem(layer.name())
-                   self.pointfilelist.append(layer.source())
-                elif layer.geometryType() == 1:
-                   self.ui.comboBoxInputEdges.addItem(layer.name())
-                   self.linefilelist.append(layer.source())
-                self.ui.comboBoxInputNodes.setCurrentIndex(1)
-                self.ui.comboBoxInputEdges.setCurrentIndex(1)
-         else:
-             self.ui.comboBoxInputNodes.setCurrentIndex(0)
-             self.ui.comboBoxInputEdges.setCurrentIndex(0)
+      ShapeLayersToCombo(self.ui.comboBoxInputNodes, self.pointfilelist, 0)
+      ShapeLayersToCombo(self.ui.comboBoxInputEdges, self.linefilelist, 1)
+
       # Updated comboBoxEdges internally so updated weights.
       self.attributeWeights()
       
    def clearInputs(self):
        self.ui.checkBoxUndirected.setChecked(False)
        self.ui.checkBoxOverwrite.setChecked(False)
+       self.ui.comboBoxAlgorithm.clear()
+       self.ui.comboBoxInputEdges.clear()
+       self.ui.comboBoxInputNodes.clear()
+       self.ui.comboBoxInputWeight.clear()
        self.ui.lineEditSourceNode.clear()
        self.ui.lineEditTargetNode.clear()
        self.ui.lineEditSave.clear()
        
    def clearReload(self):
+       # First clear any existing node selection on canvas
+       layers = qgis.utils.iface.mapCanvas().layers()
+       nodes = str(self.ui.comboBoxInputNodes.currentText())
+       for layer in layers:
+         if layer.name() == nodes:
+               layer.removeSelection()
+       # Clear menus and inputs
        self.clearInputs()
        self.loadMenus()
+
       
    def attributeWeights(self):
       # Clear the attributeComboBoxList
