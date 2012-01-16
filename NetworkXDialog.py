@@ -12,10 +12,10 @@ license		 : Relseased under Simplified BSD license (see LICENSE.txt)
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 
-import sys
+#import sys
 import os
 import glob
-from decimal import Decimal
+#from decimal import Decimal
 
 import qgis
 from qgis.gui import *
@@ -62,6 +62,26 @@ class ShapeLayersToCombo:
          else:  
              comboLayers.setCurrentIndex(0)
              
+class WriteNetworkShapefiles:
+    '''Abstract class to support writing of shapefiles from NetworkX'''
+    def __init__(self, network, fileDir, overwrite=False):
+       nodes = fileDir+'/nodes.*'
+       edges = fileDir+'/edges.*'
+       # Test/remove existing files as required
+       if glob.glob(nodes):
+           if overwrite == True:
+               for filename in glob.glob(nodes):
+                   os.remove(filename)
+           else:
+               raise IOError, "Node files already exist in output folder."
+       if glob.glob(edges):
+           if overwrite == True:
+               for filename in glob.glob(edges):
+                   os.remove(filename)
+           else:
+               raise IOError, "Edge files already exist in output folder."
+       
+       nx_shp.write_shp(network, fileDir)   
 
 
 class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo):
@@ -72,6 +92,10 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
       self.ui = Ui_NetworkXPath()
       self.ui.setupUi(self)
       self.loadMenus()
+      
+      # Counters for selected nodes on canvas which need to persist in the 
+          #class.
+      self.selectedNodes = {'source':None, 'target':None}
       
       QtCore.QObject.connect(self.ui.btnCancel,QtCore.SIGNAL("clicked()"),
          self.exit)
@@ -122,6 +146,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
        for layer in layers:
          if layer.name() == nodes:
                layer.removeSelection()
+       self.selectedNodes = {'source':None, 'target':None}
        # Clear menus and inputs
        self.clearInputs()
        self.loadMenus()
@@ -154,9 +179,10 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
    def sourcePoint(self):
       self.output = self.ui.lineEditSourceNode
       self.collectPoint()
-
+      self.nodetype = 'source'
    def targetPoint(self):
       self.output = self.ui.lineEditTargetNode
+      self.nodetype = 'target'
       self.collectPoint()
 
    def collectPoint(self):
@@ -169,8 +195,9 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
       QtCore.QObject.connect(self.point, 
          QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), 
          self.selectFeature)
-
-   def selectFeature(self, point, button):
+         
+   def selectFeature(self, point):
+   #def selectFeature(self, point, button):
        # Select Features function from 
        # http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
        # setup the provider select to filter results based on a rectangle
@@ -184,8 +211,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
          if layer.name() == nodes:
             provider = layer.dataProvider()
             if layer.geometryType() == QGis.Point:
-               # clear any previous selection
-               layer.removeSelection()
                feat = QgsFeature()
                # create the select statement
                provider.select([],rect) 
@@ -193,15 +218,18 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
                # with our buffered rectangle to limit the amount of features.
                while provider.nextFeature(feat):
                # if the feat geom returned from the selection intersects 
-               #our point then put it in a list
+                #our point then put it in a list for selection
                    if feat.geometry().intersects(rect):
-                       layer.select(feat.id())
+                       self.selectedNodes[self.nodetype] = feat.id()
                        self.output.clear()
                        self.output.insert(
                            str(feat.geometry().asPoint().x())+','
                                +str(feat.geometry().asPoint().y()))
-                       break
-                       # stop here so as to select one point only. 
+                       layer.removeSelection()
+                       for nodetype, featid in self.selectedNodes.iteritems():
+                           if featid is not None:
+                               layer.select(featid)
+                   break # stop here so as to select one point only. 
                        
    def outputFile(self):
        try:
@@ -308,7 +336,7 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath, ShapeLayersToCombo)
    def exit(self):
        self.close() 
       
-class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo):
+class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo, WriteNetworkShapefiles):
    def __init__(self):
       QtGui.QDialog.__init__(self) 
       
@@ -326,7 +354,7 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo):
       # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])
-      ShapeLayersToCombo(self.ui.comboBoxInput, self.filelist)
+      ShapeLayersToCombo(self.ui.comboBoxInput, self.filelist, 1)
          
    def outputFile(self):
        try:
@@ -336,33 +364,18 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo):
            self.ui.lineEditSave.clear()
            QtGui.QMessageBox.warning( self.iface.mainWindow(), "NetworkX Plugin Error",                         "%s" % str(e))         
 
-   def writeNetworkShapefiles(self, network):
-       try:
-           nodes = self.fd+'/nodes.*'
-           edges = self.fd+'/edges.*'
-           # test if network shapefiles already exist in target dir.
-           if glob.glob(nodes):
-               if self.ui.checkBoxOverwrite.isChecked():
-                   for filename in glob.glob(nodes):
-                       os.remove(filename)
-               else:
-                   raise IOError, "Node files already exist in output folder."
-           if glob.glob(edges):
-               if self.ui.checkBoxOverwrite.isChecked():
-                   for filename in glob.glob(edges):
-                       os.remove(filename)
-               else:
-                   raise IOError, "Edge files already exist in output folder."
-           
-           nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))   
-       except AttributeError:
-           raise AttributeError, "No output file specified."
-
    def buildNetwork(self):
          try:
+             if str(self.filelist[self.ui.comboBoxInput.currentIndex()]) == "Available layers:":
+                     raise IOError, "Please specify input shapefile layer."
+                 
              DG1 = nx.read_shp(str(self.filelist[
                                  self.ui.comboBoxInput.currentIndex()]))
-             self.writeNetworkShapefiles(DG1)                        
+             if str(self.ui.lineEditSave.text()) == '':
+                 raise IOError, "No output directory specified."
+                 
+             WriteNetworkShapefiles(DG1, self.fd, overwrite=True)
+             #self.writeNetworkShapefiles(DG1)                        
              if self.ui.checkBoxAdd.isChecked():
                  # Get created files
                  nodes = self.fd+"/nodes.shp"
@@ -373,7 +386,6 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo):
              
              self.close()
          except (AttributeError, IOError) as e:
-               
                QtGui.QMessageBox.warning( self, "NetworkX Plugin Error", "%s" % e)
    def exit(self):
        self.close()   
