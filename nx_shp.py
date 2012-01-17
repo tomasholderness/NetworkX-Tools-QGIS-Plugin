@@ -155,7 +155,7 @@ def write_shp(G, outdir):
         create_feature(g, nodes)
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
     
-    # New edges attribute write support merged into edge loop
+    # New edge attribute write support merged into edge loop
     fields = {}
     attributes = {}
     OGRTypes = {int:ogr.OFTInteger, str:ogr.OFTString, float:ogr.OFTReal}

@@ -11,6 +11,7 @@ license		 : Relseased under Simplified BSD license (see LICENSE.txt)
 """
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
+__version__ = "0.1"
 
 import os
 import glob
@@ -190,14 +191,12 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
       self.point=QgsMapToolEmitPoint(qgis.utils.iface.mapCanvas())
       mapCanvas=qgis.utils.iface.mapCanvas()
       # Create the appropriate map tool and connect the gotPoint() signal.
-      #self.emitPoint = [[QgsMapToolEmitPoint]](mapCanvas)
       mapCanvas.setMapTool(self.point)
       QtCore.QObject.connect(self.point, 
          QtCore.SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), 
          self.selectFeature)
          
    def selectFeature(self, point):
-   #def selectFeature(self, point, button):
        # Select Features function from 
        # http://www.qgisworkshop.org/html/workshop/plugins_tutorial.html
        # setup the provider select to filter results based on a rectangle
@@ -241,34 +240,9 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
            self.ui.lineEditSave.clear()
            QtGui.QMessageBox.warning( self.iface.mainWindow(), 
                                      "NetworkX Plugin Error", "%s" % str(e))
-           
-   '''
-   def writeNetworkShapefiles(self, network):
-       try:
-           nodes = self.fd+'/nodes.*'
-           edges = self.fd+'/edges.*'
-           # test if files there
-           if glob.glob(nodes):
-               if self.ui.checkBoxOverwrite.isChecked():
-                   for filename in glob.glob(nodes):
-                       os.remove(filename)
-               else:
-                   raise IOError, "Node files already exist in output folder."
-           if glob.glob(edges):
-               if self.ui.checkBoxOverwrite.isChecked():
-                   for filename in glob.glob(edges):
-                       os.remove(filename)
-               else:
-                   raise IOError, "Edge files already exist in output folder."
-           
-           nx_shp.write_shp(network, str(self.ui.lineEditSave.text()))   
-       except AttributeError:
-           raise AttributeError, "No output file specified."
-           # raise last to pass to next method (shortestPath)
-   '''            
+
    def shortestPath(self):
       try: 
-          #read source/target points from gui
           source = str(self.ui.lineEditSourceNode.text())
           target = str(self.ui.lineEditTargetNode.text())
           if source == '':
@@ -333,7 +307,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
                                         "Shortest Route Network Edges", "ogr")
              qgis.utils.iface.addVectorLayer(nodes, 
                                         "Shortest Route Network Nodes", "ogr")
-  
               
       except (IOError, AttributeError, UnboundLocalError, 
                   nx.NetworkXNoPath) as e:
@@ -358,7 +331,6 @@ class NetworkXDialogBuild(QtGui.QDialog, ShapeLayersToCombo,
       QtCore.QObject.connect(self.ui.btnSave, QtCore.SIGNAL(
           "clicked()"),self.outputFile)
           
-      # Add available layers to the input combo box.
       self.filelist = ["Available layers:"]      
       self.ui.comboBoxInput.addItem(self.filelist[0])
       ShapeLayersToCombo(self.ui.comboBoxInput, self.filelist, 1)

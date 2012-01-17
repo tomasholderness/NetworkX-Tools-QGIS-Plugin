@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/plugins/NetworkX/">
+    <file>icon/plugin_small.png</file>
     <file>icon/plugin.png</file>
     <file>icon/edit.png</file>
     <file>icon/icon.png</file>

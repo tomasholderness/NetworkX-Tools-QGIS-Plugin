@@ -20,7 +20,7 @@ from PyQt4 import QtCore
 from NetworkXDialog import NetworkXDialogPath
 from NetworkXDialog import NetworkXDialogBuild
 # Initialize Qt resources from file resources.py
-import resources
+import resources_rc
 NAME = "NetworkX Tools"
 
 class NetworkX: 
@@ -36,15 +36,17 @@ class NetworkX:
 "NetworkX Plugin Error", 
 "NetworkX Plugin requires NetworkX: http://networkx.lanl.gov/")
         
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(
+        ":/plugins/NetworkX/icon/plugin_small.png"), QtGui.QIcon.Normal, 
+            QtGui.QIcon.Off)
         # Create action that will start plugin configuration    
-        self.actionBuild = QtGui.QAction(QtGui.QIcon(
-        ":/plugins/NetworkX/icon/plugin.png"),"Build Network",
-                                    self.iface.mainWindow())
-        self.actionPath = QtGui.QAction(QtGui.QIcon(
-        ":/plugins/NetworkX/icon/plugin.png"),"Shortest Path",
-                                    self.iface.mainWindow())
-        # connect the action to the run method
+        self.actionBuild = QtGui.QAction(icon1,"Build Network", 
+                                         self.iface.mainWindow())
+        self.actionPath = QtGui.QAction(icon1,"Shortest Path", 
+                                        self.iface.mainWindow())
         
+        # connect the action to the run method
         QtCore.QObject.connect(self.actionBuild, QtCore.SIGNAL(
                                                 "triggered()"), self.runBuild)
         QtCore.QObject.connect(self.actionPath, QtCore.SIGNAL(
