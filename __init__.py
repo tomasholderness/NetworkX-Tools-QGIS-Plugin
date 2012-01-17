@@ -16,7 +16,7 @@ def name():
 def description():
   return "Perform network analysis using the NetworkX package"
 def version(): 
-  return "Version 0.1" 
+  return "Version 0.2" 
 def qgisMinimumVersion():
   return "1.7"
 def classFactory(iface):

@@ -11,7 +11,7 @@ license		 : Relseased under Simplified BSD license (see LICENSE.txt)
 """
 
 __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
-__version__ = "0.1"
+__version__ = "0.2"
 
 # Import the PyQt and QGIS libraries
 from PyQt4 import QtGui
