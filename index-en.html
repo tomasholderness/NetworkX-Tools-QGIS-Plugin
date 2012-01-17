@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<!-- ==========================================================	-->
+<!--	Content by Tom Holderness				-->
+<!--	Copyright Tom Holderness       				-->     
+<!--	17/01/2012					        -->                        
+<!-- ========================================================== -->
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="author" content="NetworkX Tools (QGIS plugin)" />
+	<meta name="description" content="Software documentation" />
+	<meta name="keywords" content="Python, QGIS, NetworkX, network, analysis" />
+	<title>NetworkX Tools Documentation</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+	<link rel="shortcut icon" href="img/favicon.ico" />
+
+</head>
+<div id="container">
+	<div id="header">
+		<a name="Top"><h2>NetworkX Tools Documentation</h2><a>
+	</div>
+<div id="contentHome">
+<body>
+<h2><a name="Contents">Contents</a></h2>
+<ol>
+<li><a href=#Overview>Overview</a></li>
+<li><a href=#Installation>Installation</a></li>
+<li><a href=#Building>Building network files</a></li>
+<li><a href=#Path>Shortest path analysis</a></li>
+<li><a href=#License>License</a></li>
+</ol>
+<p class="big">
+<h2><a name="Overview">Overview</a></h2>
+The NetworkX Tools Quantum GIS Plugin uses the NetworkX package to create and analyse networks 
+created from spatial vector data. Currently, only shapefile data are supported for reading and writing networks.
+
+<p class="big">NetworkX Tools is developed by Tom Holderness at Newcastle University and is released under and open-source BSD style license. Developers can access source code at the github page:<p>
+
+</p>
+<p class="big">
+<h2><a name="Installation">Installation</a></h2>
+Install the plugin by adding the repository link to Quantum GIS (Plugins -> Fetch Python Plugins -> Repositories -> Add repository). Once the repository is added click on the "NetworkX Tools" package in the "plugins" tab to install the package. One installation is complete you should see "NetworkX Tools" available in the "Plugins" menu.<br>
+
+<br>QGIS repository: <a href="http://www.students.ncl.ac.uk/tom.holderness/qgis_repo.xml">http://www.students.ncl.ac.uk/tom.holderness/qgis_repo.xml</a>
+<p class="big">To run the plugin you will also need the NetworkX package available from: <a target="_blank" href="http://networkx.lanl.gov/">http://networkx.lanl.gov/</a>
+
+<p class="big">
+<h2><a name="Building">Building network files</a></h2>
+NetworkX creates networks by specifying nodes and interconnecting edges. To create NetworkX network shapefiles:
+<ol>
+<li>Add a shapefile line layer to QGIS.</li> 
+<li>Open the "Build Network" tool: (Plugins -> NetworkX Tools -> Build Network).</li> 
+<li>Select the loaded layer in the available layers drop-down.</li> 
+<li>Select an output folder.</li>
+<li>Check the "Add new files to QGIS" tick box.</li>
+</ol>
+When you click "OK" NetworkX will read your shapefile line layer and create a network of nodes and interconnecting edges as defined by the geography and order of line creation in the shapefile. It will then create two new shapefile layers "nodes" and "edges" which represent the network. Attributes in the original shapefile are copied to the "edges" layer.</p>
+<p class="big">
+<h2><a name="Path">Shortest Path analysis</a></h2>
+The shortest path analysis tool calculates the shortest weighted or un-weighted distance between two nodes in a network. Note that the network should be separated into edge and node layers (e.g. use the "Build Network Tool" to create the required files. To perform create shortest path analysis:
+<ol>
+<li>Open the "Shortest Path" tool (Plugins -> NetworkX Tools -> Shortest Path)</li>
+<li>Select the desired algorithm</li>
+<li>Select the node layer</li>
+<li>Select the corresponding edge layer</li>
+<li>Specify weighting if required (attributes from edge layer)</li>
+<li>Click the Source node button to select path origin from node layer</li>
+<li>Click the Target node button to select path destination from the node layer</li>
+<li>Specify and output folder</li>
+<li>Click OK</li>
+</ol>
+When you click OK NetworkX will determine the shortest route over the network between the specified points and will create two new shapefiles corresponding to the edges and the nodes for the shortest path.
+</p>
+<p class="big">
+<h2><a name=License>License</a></h2>
+NetworkX Tools for Quantum GIS are released under and open-source BSD style license, which is as follows:<BR><BR>
+
+Copyright 2011-2012 Tomas Holderness & Newcastle University. All rights reserved.<BR>
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:<BR>
+
+   <BR>1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.<BR>
+
+   <BR>2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.<BR>
+
+<BR>This software is provided by Tomas Holderness & Newcastle University ``as is'' and any express or implied
+ warranties, including, but not limited to, the implied warranties of merchantability and
+fitness for a particular purpose are disclaimed. in no event shall Tomas Holderness & Newcastle University or
+ contributors be liable for any direct, indirect, incidental, special, exemplary, or
+consequential damages (including, but not limited to, procurement of substitute goods or
+services; loss of use, data, or profits; or business interruption) however caused and on
+any theory of liability, whether in contract, strict liability, or tort (including
+negligence or otherwise) arising in any way out of the use of this software, even if
+advised of the possibility of such damage.<BR><BR>
+
+The views and conclusions contained in the software and documentation are those if the authors and should not be interpreted as representing official policies, either expressed or implied, of Tomas Holderness or Newcastle University.<BR>
+</p>
+<p class="big"><a href="#Top">[Top]</a></p>
+</div>
+<div id="footer">&copy Tom Holderness & Newcastle University 2011 - 2012. NetworkX Tools for Quantum GIS are released under the BSD license.</div>
+</div> 
+</body>

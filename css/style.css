@@ -1,0 +1,168 @@
+html, body {
+	margin:0;
+	padding:0;
+	height:100%; /* needed for container min-height */
+	background: #DDDDDD;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+	text-align: center; // For IE
+}
+
+#container {
+	position:relative; /* needed for footer positioning*/
+	margin: auto; /* center, not in IE5 */
+	width:731px;
+	background:#FFFFFF; /* url("images/hadrian.png") no-repeat; */
+	
+	height:auto !important; /* real browsers */
+	height:100%; /* IE6: treaded as min-height*/
+
+	min-height:100%; /* real browsers */
+	
+	text-align: left; // To counteract the IE bit in body!
+}
+#contentHome {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	padding: 8px 8px 38px 8px !important; /* bottom padding for footer */
+	width: 718px;
+}
+
+#header {
+	width: 100%;
+	height: 100px;
+	color: #FFFFFF;
+	margin-bottom:0px;
+	/*background: #FFFFFF url(../img/canoe_small_2.jpg) no-repeat;*/
+	/*background: #000 url(../img/bg_avhrr_2.jpg);;*/
+	overflow:hidden;
+}
+
+#header h2 {
+	color: #2e465a;
+	letter-spacing: 1px;
+	font-size: 26px;
+	font-weight: bold;
+	position: relative;
+	margin: 0px;
+	top:33px;
+	display:block;
+	float:left;
+	/* Title Bullet Thing*/
+	/*background: url(../img/bg_t_blue.gif) no-repeat;*/
+	padding-left: 10px;
+}
+h1 {
+	/*color: #2e465a;*/
+	/*color: #9f9f9f;*/
+	/*color: #577996;*/
+	color: #2e465a;
+	margin:0px;
+	padding:0px;
+	font-size: 19px;
+	font-weight: bold;
+}
+h2 {
+	
+	color: #2a4348;
+
+	margin:0px;
+	padding:0px;
+	font-size: 15px;
+}
+
+h3 {
+	color: #2e465a;
+
+	margin:0px;
+	padding:0px;
+	font-size: 13px;
+}
+
+a {
+	/*color: #93B300;*/
+	color: #2e456a;
+	text-decoration: none;
+}
+
+p.big {
+	line-height:140%;
+	}
+
+
+#navigation {
+	background: #FFFFFF url(../img/canoe_nav.jpg);
+	
+	height: 22px;
+}
+
+/**** Main Menu ***/
+
+#menu {
+	display: block;
+	float:right;
+}
+
+#menu li {
+	display: block;
+	float: left;
+	white-space: nowrap;
+}
+
+#menu li a {
+	display: block;
+	padding: 4px;
+	/*padding: 15px 4px 4px 4px;*/
+	
+/*	padding: 55px 20px 12px 20px;*/
+	/*padding: 235px 10px 12px 10px;*/
+	text-decoration: none;
+	text-align: center;
+	/*color: #fff;*/
+	color: #2a4348;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+#menu li a:hover {
+	/*padding: 235px 10px 12px 10px;*/
+	/*padding: 10px 1px 1px 1px;*/
+	background: url(../img/hover.png);
+	/*background-color: #2e456a;*/
+	/*font-size: px;*/
+	/*color: black;*/
+/*	background: url(../img/bg_t.gif)*/
+	
+}
+
+
+
+#menu li a.current {
+	/*background: url(../img/bg_menu_gray.gif);*/
+	background: url(../img/hover.png);
+}
+
+#menu li a.current:hover {
+	/*background: url(../img/bg_t_blue.gif);*/
+	/*color: #000000;*/
+			
+}
+
+#footer {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	
+	text-align: center;
+	color: #2a4348;
+	padding: 4px 0px 0px 0px;
+	background: #FFFFFF url(../img/canoe_foot.png);
+	
+	/*background:#FFFFFF;*/
+	position:absolute;
+	width:100%;
+	height: 14px;
+	bottom: 0; /* stick to bottom */
+	margin: 0;
+}

@@ -14,6 +14,7 @@ __author__ = """Tom Holderness (tom.holderness@ncl.ac.uk)"""
 __version__ = "0.2"
 
 # Import the PyQt and QGIS libraries
+import qgis
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 # Import the code for the dialog
@@ -40,10 +41,17 @@ class NetworkX:
         icon1.addPixmap(QtGui.QPixmap(
         ":/plugins/NetworkX/icon/plugin_small.png"), QtGui.QIcon.Normal, 
             QtGui.QIcon.Off)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(
+        ":/plugins/NetworkX/icon/mActionHelpContents.png"), QtGui.QIcon.Normal,
+            QtGui.QIcon.Off)
+         
         # Create action that will start plugin configuration    
         self.actionBuild = QtGui.QAction(icon1,"Build Network", 
                                          self.iface.mainWindow())
         self.actionPath = QtGui.QAction(icon1,"Shortest Path", 
+                                        self.iface.mainWindow())
+        self.actionHelp = QtGui.QAction(icon2, "Documentation",
                                         self.iface.mainWindow())
         
         # connect the action to the run method
@@ -51,14 +59,18 @@ class NetworkX:
                                                 "triggered()"), self.runBuild)
         QtCore.QObject.connect(self.actionPath, QtCore.SIGNAL(
                                                 "triggered()"), self.runPath)
+        QtCore.QObject.connect(self.actionHelp, QtCore.SIGNAL(
+                                                "triggered()"), self.runHelp)
       
         self.iface.addPluginToMenu("&NetworkX Tools", self.actionBuild)
         self.iface.addPluginToMenu("&NetworkX Tools", self.actionPath)
+        self.iface.addPluginToMenu("&NetworkX Tools", self.actionHelp)
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&NetworkX Tools",self.actionBuild)
-        self.iface.removePluginMenu("&NetworkX Tools",self.actionPath)    
+        self.iface.removePluginMenu("&NetworkX Tools", self.actionBuild)
+        self.iface.removePluginMenu("&NetworkX Tools", self.actionPath)
+        self.iface.removePluginMenu("&NetworkX Tools", self.actionHelp)
 
   # run methods that performs all the real work (one run method per tool)
     def runBuild(self): 
@@ -73,3 +85,6 @@ class NetworkX:
         self.dock_window = NetworkXDialogPath(self)
         self.iface.mainWindow().addDockWidget(QtCore.Qt.RightDockWidgetArea, 
                                                 self.dock_window)
+    
+    def runHelp(self):
+        qgis.utils.showPluginHelp()
