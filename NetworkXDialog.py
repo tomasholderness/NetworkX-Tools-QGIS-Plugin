@@ -115,7 +115,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
         # List available algorithms
         self.algorithms = {'Shortest Path':'shortest_path',
                          'Dijkstra':'dijkstra_path','A*':'astar_path'}
-        print self.algorithms
         for key in self.algorithms:
             self.ui.comboBoxAlgorithm.addItem(key)
             self.ui.comboBoxAlgorithm.setCurrentIndex(0)
@@ -165,7 +164,6 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
         # Add new attributes of layer to weights.         
         for layer in self.layermap.itervalues():
             edges = str(self.ui.comboBoxInputEdges.currentText())
-            print layer.name(), edges
             if layer.name() == edges:
                 provider = layer.dataProvider()
                 try:
@@ -285,11 +283,11 @@ class NetworkXDialogPath(QtGui.QDockWidget, Ui_NetworkXPath,
             try: 
                 targetNode
             except NameError:
-                raise "Specified target node not found in edge layer."
+                raise IOError, "Specified target node not found in edge layer."
             try: 
                 sourceNode
             except NameError:
-                raise "Specified source node not found in edge layer."   
+                raise IOError, "Specified source node not found in edge layer."   
                       
             key = str(self.ui.comboBoxAlgorithm.currentText())
             algorithm = self.algorithms[key]
