@@ -2,12 +2,7 @@
   <qresource prefix="/plugins/NetworkX/">
     <file>icon/plugin_small.png</file>
     <file>icon/plugin.png</file>
-    <file>icon/edit.png</file>
-    <file>icon/icon.png</file>
     <file>icon/mActionFolder.png</file>
-    <file>icon/mActionNewVectorLayer.png</file>
-    <file>icon/mActionNodeTool.png</file>
-    <file>icon/mActionSelect.png</file>
     <file>icon/coordinate_capture.png</file>
   </qresource>
 </RCC>
